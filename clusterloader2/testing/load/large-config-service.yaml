@@ -1,0 +1,16 @@
+## Input params
+{{$actionName := .actionName}}
+{{$namespaces := .namespaces}}
+{{$replicasPerNamespace := .replicasPerNamespace}}
+
+steps:
+- name: "{{$actionName}} k8s services"
+  phases:
+  - namespaceRange:
+      min: 1
+      max: {{$namespaces}}
+    replicasPerNamespace: {{$replicasPerNamespace}}
+    tuningSet: Sequence
+    objectBundle:
+    - basename: large-service
+      objectTemplatePath: service.yaml
