@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2023-06-12T18:22:27Z"
+  name: large-service-999
+  namespace: test-cedlai-1
+  resourceVersion: "31196576"
+  uid: eb514e5e-d13b-44f4-ae37-50487a1ac8e2
+spec:
+  clusterIP: 10.0.29.246
+  clusterIPs:
+  - 10.0.29.246
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    group: load
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

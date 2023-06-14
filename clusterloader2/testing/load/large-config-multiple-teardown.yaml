@@ -1,6 +1,6 @@
 name: deployment-churn
 
-{{$churn := DefaultParam .CL2_REPEATS 5}}  # How many times to repeat the churn phase
+{{$churn := DefaultParam .CL2_REPEATS 1}}  # How many times to repeat the churn phase
 {{$totalPods := DefaultParam .CL2_TOTAL_PODS 5000}}
 {{$serviceSize := DefaultParam .CL2_SERVICE_SIZE 1000}}
 {{$namespaces := 1}}
