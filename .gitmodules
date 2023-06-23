@@ -1,0 +1,3 @@
+[submodule "clusterloader2/clusterloader2/prometheus_pandas"]
+	path = clusterloader2/clusterloader2/prometheus_pandas
+	url = git@github.com:dcoles/prometheus-pandas.git

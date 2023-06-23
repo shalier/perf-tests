@@ -1,0 +1,198 @@
+name: deployment-churn
+automanagednamespaces: 0
+namespace:
+  number: 1
+  prefix: test-27qav4
+  deletestalenamespaces: true
+  deleteautomanagednamespaces: true
+  enableexistingnamespaces: false
+  deletenamespacetimeout: 600000000000
+steps:
+- phases: []
+  measurements:
+  - method: Sleep
+    params:
+      action: start
+      duration: 1ms
+    identifier: Dummy
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Log - nodes=100, namespaces=1, totalPods=5000,deploymentQPS=1000, churn=1,
+    serviceSize=1000
+- phases: []
+  measurements:
+  - method: PodStartupLatency
+    params:
+      action: start
+      labelSelector: group = deployment-churn
+      threshold: 60s
+    identifier: PodStartupLatency
+    instances: []
+  - method: WaitForControlledPodsRunning
+    params:
+      action: start
+      apiVersion: apps/v1
+      checkIfPodsAreUpdated: true
+      kind: Deployment
+      labelSelector: group = deployment-churn
+      operationTimeout: 15m
+    identifier: WaitForRunningLatencyDeployments
+    instances: []
+  - method: SchedulingThroughput
+    params:
+      action: start
+    identifier: SchedulingThroughput
+    instances: []
+  - method: APIResponsivenessPrometheus
+    params:
+      action: start
+    identifier: APIResponsivenessPrometheusSimple
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: start measurements
+- phases:
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    replicaspernamespace: 1000
+    tuningset: Sequence
+    objectbundle:
+    - basename: large-service
+      objecttemplatepath: service.yaml
+      templatefillmap: {}
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: Creating k8s services
+- phases: []
+  measurements:
+  - method: Sleep
+    params:
+      duration: 30s
+    identifier: sleep
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Sleep for  30s before start creating deployments - iteration 0
+- phases:
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    replicaspernamespace: 5000
+    tuningset: DeploymentCreateQps
+    objectbundle:
+    - basename: deployment-churn
+      objecttemplatepath: simple-deployment.yaml
+      templatefillmap:
+        CpuRequest: 10m
+        Group: deployment-churn
+        Image: mcr.microsoft.com/oss/kubernetes/pause:3.6
+        MemoryRequest: 50M
+        Replicas: 1
+        SvcName: large-service
+        serviceSize: 1000
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: Creating Deployments
+- phases: []
+  measurements:
+  - method: WaitForControlledPodsRunning
+    params:
+      action: gather
+    identifier: WaitForRunningLatencyDeployments
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Waiting for latency pods to be running
+- phases: []
+  measurements:
+  - method: PodStartupLatency
+    params:
+      action: gather
+    identifier: PodStartupLatency
+    instances: []
+  - method: SchedulingThroughput
+    params:
+      action: gather
+    identifier: SchedulingThroughput
+    instances: []
+  - method: APIResponsivenessPrometheus
+    params:
+      action: gather
+      enableViolations: true
+      summaryName: APIResponsivenessPrometheus_simple
+      useSimpleLatencyQuery: true
+    identifier: APIResponsivenessPrometheusSimple
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Collecting measurements
+tuningsets:
+- name: Sequence
+  initialdelay: 0
+  qpsload: null
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload:
+    parallelismlimit: 1
+  globalqpsload: null
+- name: Uniform5qps
+  initialdelay: 0
+  qpsload:
+    qps: 5
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload: null
+- name: default
+  initialdelay: 0
+  qpsload: null
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload:
+    qps: 1000
+    burst: 1
+- name: DeploymentCreateQps
+  initialdelay: 0
+  qpsload:
+    qps: 1000
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload: null
+- name: DeploymentDeleteQps
+  initialdelay: 0
+  qpsload:
+    qps: 1000
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload: null
+chaosmonkey:
+  nodefailure: null
+  excludednodes: {}

@@ -119,6 +119,7 @@ steps:
         Method: WaitForControlledPodsRunning
         Params:
           action: gather
+  {{ if gt $churn 1}}
   - name: Sleep for 2m before deleting pods
     measurements:
     - Identifier: sleep
@@ -147,6 +148,7 @@ steps:
         Method: WaitForControlledPodsRunning
         Params:
           action: gather
+  {{end}}
   {{end}}
 
   - name: Collecting measurements
