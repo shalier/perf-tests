@@ -32,7 +32,7 @@ while [ $# -gt 0 ] ; do
 done
 
 # add check if skip then need to give start/end
-CL2_SERVICE_SIZE=1000
+CL2_SERVICE_SIZE=1
 CL2_LOAD_TEST_THROUGHPUT=1000
 if ! $skip; then
   kubectl delete -f testing/load/prometheus.yaml

@@ -4,10 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"math"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	core "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
@@ -32,13 +35,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	svcName := "test-service"
+	namespaceName := "default"
 	// create service with no selector
 	_, err = clientset.CoreV1().Services("default").Create(context.Background(),
 		&core.Service{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-service",
-				Namespace: "default",
+				Name:      svcName,
+				Namespace: namespaceName,
 			},
 			Spec: core.ServiceSpec{
 				Ports: []core.ServicePort{
@@ -56,23 +60,26 @@ func main() {
 		panic(err)
 	}
 
+	var port80 int32 = 80
+	endpointAddrs := generateEndpointIPs(5000)
+
 	// create endpoints
-	_, err = clientset.CoreV1().Endpoints("default").Create(context.Background(),
+	_, err = clientset.CoreV1().Endpoints(namespaceName).Create(context.Background(),
 		&core.Endpoints{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-service",
-				Namespace: "default",
+				Name:      svcName,
+				Namespace: namespaceName,
 			},
 			Subsets: []core.EndpointSubset{
 				{
-					Addresses: []core.EndpointAddress{},
-					Ports:     []core.EndpointPort{},
+					Addresses: endpointAddrs,
+					Ports:     []core.EndpointPort{{Port: port80}},
 				},
 			},
 		},
 		metav1.CreateOptions{})
 	if err != nil {
-		fmt.Println("failed to make endpoint slices")
+		fmt.Println("failed to make endpoints")
 		panic(err)
 	}
 
@@ -94,6 +101,42 @@ func main() {
 	ticker.Stop()
 	done <- true
 	fmt.Println("Ticker stopped")
+}
+
+// need to distribute 5k endpoints to endpointslices
+// probably need to put kube stuff as parameter
+func distributeEndpointsToEndpointSlices(clientset *kubernetes.Clientset, ns string, port *int32, ipAddrs []string) error {
+	endpointSliceName := "endpoint-slice"
+	_, err := clientset.DiscoveryV1().EndpointSlices(ns).Create(context.Background(),
+		&discoveryv1.EndpointSlice{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      endpointSliceName,
+				Namespace: ns,
+				Labels:    map[string]string{"kubernetes.io/service-name": "test-service"},
+			},
+			AddressType: discoveryv1.AddressTypeIPv4,
+			Ports:       []discoveryv1.EndpointPort{{Port: port}},
+			Endpoints:   []discoveryv1.Endpoint{},
+		}, metav1.CreateOptions{})
+	return err
+}
+
+func generateEndpointIPs(numIpToCreate float64) []string {
+	addresses := []string{}
+	initialIP := "10.244."
+	fourthLim := math.Ceil(numIpToCreate / 256)
+	for i := 0; i <= 256; i++ {
+		for j := 0; j <= int(fourthLim); j++ {
+			third := strconv.Itoa(i)
+			fourth := strconv.Itoa(j)
+			addr := initialIP + third + "." + fourth
+			addresses = append(addresses, addr)
+			if len(addresses) == 999 {
+				return addresses
+			}
+		}
+	}
+	return nil
 }
 
 /*
