@@ -2,6 +2,7 @@
 {{$actionName := .actionName}}
 {{$namespaces := .namespaces}}
 {{$replicasPerNamespace := .replicasPerNamespace}}
+{{$objectTemplatePath:= .objectTemplatePath}}
 
 steps:
 - name: "{{$actionName}} k8s services"
@@ -13,4 +14,4 @@ steps:
     tuningSet: Sequence
     objectBundle:
     - basename: large-service
-      objectTemplatePath: service.yaml
+      objectTemplatePath: {{$objectTemplatePath}}

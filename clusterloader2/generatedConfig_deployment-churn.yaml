@@ -2,9 +2,9 @@ name: deployment-churn
 automanagednamespaces: 0
 namespace:
   number: 1
-  prefix: test-27qav4
+  prefix: test-hhwh7k
   deletestalenamespaces: true
-  deleteautomanagednamespaces: true
+  deleteautomanagednamespaces: false
   enableexistingnamespaces: false
   deletenamespacetimeout: 600000000000
 steps:
@@ -19,17 +19,10 @@ steps:
   module:
     path: ""
     params: {}
-  name: Log - nodes=100, namespaces=1, totalPods=5000,deploymentQPS=1000, churn=1,
+  name: Log - nodes=150, namespaces=1, totalPods=16000,deploymentQPS=1000, churn=1,
     serviceSize=1000
 - phases: []
   measurements:
-  - method: PodStartupLatency
-    params:
-      action: start
-      labelSelector: group = deployment-churn
-      threshold: 60s
-    identifier: PodStartupLatency
-    instances: []
   - method: WaitForControlledPodsRunning
     params:
       action: start
@@ -37,18 +30,13 @@ steps:
       checkIfPodsAreUpdated: true
       kind: Deployment
       labelSelector: group = deployment-churn
-      operationTimeout: 15m
+      operationTimeout: 60m
     identifier: WaitForRunningLatencyDeployments
     instances: []
   - method: SchedulingThroughput
     params:
       action: start
     identifier: SchedulingThroughput
-    instances: []
-  - method: APIResponsivenessPrometheus
-    params:
-      action: start
-    identifier: APIResponsivenessPrometheusSimple
     instances: []
   module:
     path: ""
@@ -71,23 +59,12 @@ steps:
     path: ""
     params: {}
   name: Creating k8s services
-- phases: []
-  measurements:
-  - method: Sleep
-    params:
-      duration: 30s
-    identifier: sleep
-    instances: []
-  module:
-    path: ""
-    params: {}
-  name: Sleep for  30s before start creating deployments - iteration 0
 - phases:
   - namespacerange:
       min: 1
       max: 1
       basename: null
-    replicaspernamespace: 5000
+    replicaspernamespace: 16000
     tuningset: DeploymentCreateQps
     objectbundle:
     - basename: deployment-churn
@@ -105,7 +82,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Creating Deployments
+  name: Creating Deployments- iteration 0
 - phases: []
   measurements:
   - method: WaitForControlledPodsRunning
@@ -116,31 +93,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Waiting for latency pods to be running
-- phases: []
-  measurements:
-  - method: PodStartupLatency
-    params:
-      action: gather
-    identifier: PodStartupLatency
-    instances: []
-  - method: SchedulingThroughput
-    params:
-      action: gather
-    identifier: SchedulingThroughput
-    instances: []
-  - method: APIResponsivenessPrometheus
-    params:
-      action: gather
-      enableViolations: true
-      summaryName: APIResponsivenessPrometheus_simple
-      useSimpleLatencyQuery: true
-    identifier: APIResponsivenessPrometheusSimple
-    instances: []
-  module:
-    path: ""
-    params: {}
-  name: Collecting measurements
+  name: Waiting for latency pods to be running - iteration 0
 tuningsets:
 - name: Sequence
   initialdelay: 0

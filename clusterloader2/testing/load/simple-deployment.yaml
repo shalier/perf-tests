@@ -7,8 +7,8 @@
 {{$Image := DefaultParam .Image "registry.k8s.io/pause:3.9"}}
 {{$RUN_ON_ARM_NODES := DefaultParam .CL2_RUN_ON_ARM_NODES false}}
 {{$serviceSize := .serviceSize}}
-
 {{$index:= Mod .Index $serviceSize}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:

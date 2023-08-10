@@ -248,8 +248,6 @@ spec:
         release: prometheus
         chart: prometheus-15.9.0
         heritage: Helm
-        
-        sidecar.istio.io/inject: "false"
     spec:
       enableServiceLinks: true
       serviceAccountName: prometheus
@@ -262,7 +260,7 @@ spec:
             - --webhook-url=http://127.0.0.1:9090/-/reload
           resources:
             requests:
-              memory: 28G
+              memory: 50G
               cpu: 2
           volumeMounts:
             - name: config-volume
