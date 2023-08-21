@@ -1,0 +1,16 @@
+sum(rate(apiserver_request_total{job="kubernetes-apiservers",code=~"2.."}[30s]))*100/sum(rate(apiserver_request_total{job="kubernetes-apiservers"}[30s]))
+sum(rate(apiserver_request_total{job="kubernetes-apiservers",code=~"[45].."}[30s]))*100/sum(rate(apiserver_request_total{job="kubernetes-apiservers"}[30s]))
+max by (code)(rate(apiserver_request_total{code=~"^(?:5..)$"}[30s]) / rate(apiserver_request_total[30s]))
+max by (code)(rate(apiserver_request_total{code=~"^(?:4..)$"}[30s]) / rate(apiserver_request_total[30s]))
+histogram_quantile(0.99, sum(rate(apiserver_request_slo_duration_seconds_bucket{job="kubernetes-apiservers"}[30s])) by (verb, le))
+sum(rate(apiserver_request_total[30s])) by (verb)
+max by (name)(rate(workqueue_adds_total{job="kubernetes-apiservers"}[30s]))
+rate(process_cpu_seconds_total{job="kubernetes-apiservers"}[30s])
+process_resident_memory_bytes{job="kubernetes-apiservers"}/10^6
+histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket{job="kubernetes-apiservers"}[30s])) by (le,operation))
+max by (resource)(rate(apiserver_storage_list_fetched_objects_total{job="kubernetes-apiservers"}[30s]))
+max by (resource_prefix)(rate(apiserver_cache_list_fetched_objects_total{job="kubernetes-apiservers"}[30s]))
+max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="discovery", pod=~"istio.*"}[30s])))
+max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="coredns"}[30s])))*1000
+max by (pod, container)(container_memory_working_set_bytes{container="discovery", pod=~"istio.*"})/10^6
+max by (pod, container)(container_memory_working_set_bytes{container="coredns"})/10^6

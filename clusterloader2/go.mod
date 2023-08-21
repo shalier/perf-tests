@@ -35,27 +35,30 @@ replace (
 )
 
 require (
-	github.com/go-errors/errors v1.0.1
-	github.com/google/go-cmp v0.5.6
+	github.com/go-errors/errors v1.4.2
+	github.com/google/go-cmp v0.5.9
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/onsi/ginkgo v1.14.0
-	github.com/prometheus/client_model v0.2.0
-	github.com/prometheus/common v0.26.0
+	github.com/onsi/ginkgo v1.16.5
+	github.com/prometheus/client_model v0.4.0
+	github.com/prometheus/common v0.44.0
 	github.com/prometheus/prometheus v1.8.2-0.20210331101223-3cafc58827d1
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.7.0
-	golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
+	github.com/stretchr/testify v1.8.4
+	golang.org/x/oauth2 v0.10.0
+	golang.org/x/sync v0.3.0
+	golang.org/x/time v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.22.15
-	k8s.io/apimachinery v0.22.15
-	k8s.io/client-go v0.22.15
-	k8s.io/component-base v0.22.15
+	istio.io/api v1.19.0-beta.0
+	istio.io/client-go v1.19.0-alpha.1.0.20230810203904-45e85278e0fc // indirect
+	istio.io/istio v0.0.0-20230814185038-5e4d2a9ad512
+	k8s.io/api v0.28.0-beta.0
+	k8s.io/apimachinery v0.28.0-beta.0
+	k8s.io/client-go v0.28.0-beta.0
+	k8s.io/component-base v0.28.0-beta.0
 	k8s.io/component-helpers v0.22.15
-	k8s.io/klog/v2 v2.30.0
+	k8s.io/klog/v2 v2.100.1
 	k8s.io/kubelet v0.22.15
 	k8s.io/kubernetes v1.22.15
+	k8s.io/utils v0.0.0-20230711102312-30195339c3c7
+	sigs.k8s.io/controller-runtime v0.15.1
 )

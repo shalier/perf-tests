@@ -2,7 +2,7 @@ name: deployment-churn
 automanagednamespaces: 0
 namespace:
   number: 1
-  prefix: test-vn1bol
+  prefix: test-6ffc4h
   deletestalenamespaces: true
   deleteautomanagednamespaces: false
   enableexistingnamespaces: false
@@ -19,7 +19,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Log - nodes=150, namespaces=1, totalPods=1000,deploymentQPS=1000, churn=1,
+  name: Log - nodes=150, namespaces=1, totalPods=2000,deploymentQPS=1000, churn=1,
     serviceSize=1
 - phases: []
   measurements:
@@ -64,7 +64,7 @@ steps:
       min: 1
       max: 1
       basename: null
-    replicaspernamespace: 1000
+    replicaspernamespace: 2000
     tuningset: DeploymentCreateQps
     objectbundle:
     - basename: deployment-churn
