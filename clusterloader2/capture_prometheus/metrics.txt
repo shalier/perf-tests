@@ -11,10 +11,6 @@ histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket{job="kube
 max by (resource)(rate(apiserver_storage_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
 max by (resource_prefix)(rate(apiserver_cache_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
 max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="discovery", pod=~"istio.*"}[1m])))
-max by (container,namespace)(ceil(rate(container_cpu_usage_seconds_total{container="istio-proxy"}[1m])))*1000
-max by (pod,namespace)(ceil(rate(container_cpu_usage_seconds_total{container="istio-proxy"}[1m])))*1000
 max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="coredns"}[1m])))*1000
 max by (pod, container)(container_memory_working_set_bytes{container="discovery", pod=~"istio.*"})/10^6
-max by (pod,namespace)(container_memory_working_set_bytes{container="istio-proxy"})/10^6
-max by (container,namespace)(container_memory_working_set_bytes{container="istio-proxy"})/10^6
 max by (pod, container)(container_memory_working_set_bytes{container="coredns"})/10^6

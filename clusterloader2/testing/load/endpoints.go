@@ -93,10 +93,13 @@ func main() {
 	}
 	// now there's a wait time of tickerTime between updates so the num changes needs to be higher
 	// half percentage churn down and half percentage churn up
-	numChangePerTickerTime := percentage * len(endpointAddrs) / (100 * 2)
-	fmt.Println("numChangePerTickerTime", numChangePerTickerTime)
+	// if 10% churn = 100 then 50 down 50 up per second
+	stepsPerSecond := testDuration / (tickerTime * 2 / 1000)
+	stages := int(stepsPerSecond)
+	numChangePerTickerTime := percentage * len(endpointAddrs) / (100 * 2 * stages)
+	// fmt.Println("numChangePerTickerTime", numChangePerTickerTime, "stages", stages)
 	operations := 0
-	shouldRm := true
+	stage := 0
 	go func() {
 		for {
 			select {
@@ -111,13 +114,12 @@ func main() {
 				endpointAddrs := endpointObj.Subsets[0].Addresses
 				// fmt.Println("after creating length:", len(endpointAddrs))
 
-				if shouldRm {
+				if stage < stages {
+					stage++
 					// fmt.Println("removing endpoints")
-					shouldRm = false
 					randomRemoveEndpointAddrs(&endpointAddrs, endpointMap, numChangePerTickerTime)
 				} else {
 					// fmt.Println("creating endpoints")
-					shouldRm = true
 					addEndpointAddrs(endpointMap, numChangePerTickerTime)
 				}
 				// fmt.Println("length:", len(endpointMap))
@@ -204,6 +206,9 @@ func randomRemoveEndpointAddrs(addrs *[]core.EndpointAddress, endpointMap map[st
 		// fmt.Print((*addrs)[index].IP, " ")
 		delete(endpointMap, (*addrs)[index].IP)
 		numRm--
+	}
+	if len(endpointMap) == 0 {
+		endpointMap["1.1.1.1"] = 0
 	}
 }
 

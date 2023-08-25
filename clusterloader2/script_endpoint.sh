@@ -14,9 +14,9 @@ while [ $# -gt 0 ] ; do
 done
 
 istiodFailed=false
-churn=(0 10 20 50)
-endpoints=(5000 10000 15000)
-tries=(1 2 3)
+churn=(0 10 50)
+endpoints=(20000 50000 65000)
+tries=(1)
 for try in "${tries[@]}"
 do
   for e in "${endpoints[@]}"
@@ -29,25 +29,24 @@ do
       kubectl delete ns test
       kubectl create ns test
       kubectl label ns test istio.io/rev=asm-1-17
-      sleep 5
       kubectl -n aks-istio-system rollout restart deployment/istiod-asm-1-17
 
       kubectl delete -f testing/load/detailedprometheus.yaml
       pkill -f "port-forward"
       kubectl apply -f testing/load/detailedprometheus.yaml
-
       sleep 1m
-      startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       echo "Port forward Prometheus"
+      startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       kubectl port-forward -n aks-istio-system  svc/prometheus 9090:9090 &
-      sleep 1m
+      echo Waiting for istiod to stabilize
+      sleep 5m
 
       echo "Churn endpoints"
       if ! $skip; then
         blah=$(go run testing/load/endpoints.go ${STRESS_ENDPOINTS} ${STRESS_CHURN})
         STRESS_PROMETHEUS_DIR_PATH="t${try}_${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn_${blah}"
         echo "STRESS_PROMETHEUS_DIR_PATH ${STRESS_PROMETHEUS_DIR_PATH}"
-        sleep 13m 
+        sleep 15m 
         echo "Checking if istiod failed"
         istiodStatuses=$(kubectl get pod -l=app='istiod' -n aks-istio-system -o jsonpath='{.items[*].status.phase}')
         statuses=($istiodStatuses)
