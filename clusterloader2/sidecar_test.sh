@@ -57,9 +57,6 @@ do
         istiodFailed=true
     fi
 done
-if [ ${#statuses[@]} -gt 1 ] ; then
-  echo hi
-fi
 
 if [ $istiodFailed != true ]; then
   echo "istiod didn't fail at ${CL2_TOTAL_PODS} pods"

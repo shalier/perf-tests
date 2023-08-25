@@ -12,13 +12,11 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
-	discoveryv1 "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-	"k8s.io/utils/pointer"
 )
 
 const (
@@ -56,6 +54,7 @@ func main() {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      svcName,
 				Namespace: namespaceName,
+				Labels:    map[string]string{"istio.io/rev": "asm-1-17"},
 			},
 			Spec: core.ServiceSpec{
 				Ports: []core.ServicePort{
@@ -69,113 +68,142 @@ func main() {
 		},
 		metav1.CreateOptions{})
 	if err != nil {
-		fmt.Println("failed to make service")
-		// panic(err)
+		fmt.Println("failed to make service", err)
 	}
 
 	endpointAddrs := generateEndpointIPs()
-	// fmt.Println(len(endpointAddrs))
-	// fmt.Println("Creating endpoint slices")
-	// err = createEndpointSlices(clientset, namespaceName, &port80, endpointAddrs)
-	// if err != nil {
-	// 	fmt.Println("failed to make endpoint slices", err)
-	// 	// panic(err)
-	// }
-	fmt.Println("creating endpoints")
+	endpointMap := make(map[string]int)
+	for _, addr := range endpointAddrs {
+		endpointMap[addr] = 0
+	}
+	// fmt.Println("starting length", len(endpointAddrs))
+
 	err = createEndpoints(clientset, namespaceName, port80, endpointAddrs)
 	if err != nil {
-		fmt.Println("failed to make endpoints")
-		// panic(err)
+		fmt.Println("failed to make endpoints", err)
 	}
-	fmt.Println("Wait before churn")
-	time.Sleep(5 * time.Second)
-
-	ticker := time.NewTicker(200 * time.Millisecond)
+	var tickerTime time.Duration = 500
+	var testDuration time.Duration = 2 // testDuration s
+	ticker := time.NewTicker(tickerTime * time.Millisecond)
 	done := make(chan bool)
 	percentage, err := strconv.Atoi(os.Args[2])
-	fmt.Println("endpoint churn", percentage, "%")
 	if err != nil {
-		fmt.Println("percentage must be an int")
+		fmt.Println("percentage must be an int", err)
 		panic(err)
 	}
+	// now there's a wait time of tickerTime between updates so the num changes needs to be higher
+	// half percentage churn down and half percentage churn up
+	numChangePerTickerTime := percentage * len(endpointAddrs) / (100 * 2)
+	fmt.Println("numChangePerTickerTime", numChangePerTickerTime)
+	operations := 0
 	shouldRm := true
 	go func() {
 		for {
 			select {
 			case <-done:
 				return
-			case t := <-ticker.C:
-				fmt.Println("Tick at", t)
+			case <-ticker.C:
 				endpointList, err := clientset.CoreV1().Endpoints(namespaceName).List(context.Background(), metav1.ListOptions{})
 				if err != nil {
 					fmt.Println("couldn't list endpoint obj", err)
 				}
 				endpointObj := endpointList.Items[0]
 				endpointAddrs := endpointObj.Subsets[0].Addresses
-				numChangePer200ms := percentage * len(endpointAddrs) / 500
+				// fmt.Println("after creating length:", len(endpointAddrs))
+
 				if shouldRm {
-					fmt.Println("removing endpoints")
+					// fmt.Println("removing endpoints")
 					shouldRm = false
-					randomRemoveEndpointAddrs(&endpointAddrs, numChangePer200ms)
+					randomRemoveEndpointAddrs(&endpointAddrs, endpointMap, numChangePerTickerTime)
 				} else {
-					fmt.Println("creating endpoints")
+					// fmt.Println("creating endpoints")
 					shouldRm = true
-					addEndpointAddrs(&endpointAddrs, numChangePer200ms)
+					addEndpointAddrs(endpointMap, numChangePerTickerTime)
 				}
-				diff := compareEndpointAddrs(endpointAddrs, endpointObj.Subsets[0].Addresses)
-				fmt.Println(len(diff))
-				endpointObj.Subsets[0].Addresses = endpointAddrs
-				fmt.Println("updating endpoints")
+				// fmt.Println("length:", len(endpointMap))
+				newAddrs := []core.EndpointAddress{}
+				for k := range endpointMap {
+					newAddrs = append(newAddrs, core.EndpointAddress{
+						IP: k,
+					})
+				}
+				endpointObj.Subsets[0].Addresses = newAddrs
+				// fmt.Println("updating endpoints")
 				_, err = clientset.CoreV1().Endpoints(namespaceName).Update(context.Background(), &endpointObj, metav1.UpdateOptions{})
 				if err != nil {
 					fmt.Println("failed to update endpoints", err)
 					panic(err)
 				}
+				operations++
 			}
 		}
 	}()
 
-	time.Sleep(1000 * time.Millisecond)
+	time.Sleep(testDuration * time.Second)
 	ticker.Stop()
 	done <- true
-	fmt.Println("Ticker stopped")
+	fmt.Printf("%vop", strconv.Itoa(operations))
 }
 
-func compareEndpointAddrs(a, b []core.EndpointAddress) []core.EndpointAddress {
-	mb := make(map[core.EndpointAddress]struct{}, len(b))
-	for _, x := range b {
-		mb[x] = struct{}{}
-	}
-	var diff []core.EndpointAddress
-	for _, x := range a {
-		if _, found := mb[x]; !found {
-			diff = append(diff, x)
+// endpoints to add back should be different from endpoints that were already in the []EndpointAddress
+// generate random numbers from the ceiling found in generateEndpointIPs to 256
+func addEndpointAddrs(endpointMap map[string]int, numAdd int) {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	thirdRange := rand.Perm(256)
+	fourthRange := rand.Perm(256)
+	// fmt.Println("Adding")
+	// fmt.Println("numAdd", numAdd)
+outer:
+	for _, t := range thirdRange {
+		for _, f := range fourthRange {
+			if numAdd <= 0 {
+				break outer
+			}
+			third := strconv.Itoa(t)
+			fourth := strconv.Itoa(f)
+			newIP := initialIP + third + "." + fourth
+			_, ok := endpointMap[newIP]
+			if !ok {
+				endpointMap[newIP] = 0
+				numAdd--
+			}
 		}
 	}
-	return diff
 }
 
-func addEndpointAddrs(addrs *[]core.EndpointAddress, numAdd int) {
+// generate endpoints 10.244.[0-256].[0-<needToCalculate>]
+// fourth IP section is from the range 0 to needToCalculate
+// needToCalcualte is found by ceil(numEndpoints being tested / 256)
+func generateEndpointIPs() []string {
+	addresses := []string{}
 	numEndpoints, _ := strconv.ParseFloat(numEndpointsToTest, 64)
-	min := int(math.Ceil(numEndpoints / 256))
-	for i := 0; i < numAdd; i++ {
-		rand.Seed(time.Now().UnixNano())
-		newFourth := rand.Intn(256-min) + min
-		newThird := rand.Intn(256)
-		fourth := strconv.Itoa(newFourth)
-		third := strconv.Itoa(newThird)
+	fourthLimIPAddr := int(math.Ceil(numEndpoints / 256))
 
-		*addrs = append(*addrs, core.EndpointAddress{
-			IP: initialIP + third + "." + fourth,
-		})
+	for t := 0; t < 256; t++ {
+		for f := 0; f <= fourthLimIPAddr; f++ {
+			third := strconv.Itoa(t)
+			fourth := strconv.Itoa(f)
+			addr := initialIP + third + "." + fourth
+			addresses = append(addresses, addr)
+			if len(addresses) == int(numEndpoints) {
+				return addresses
+			}
+		}
 	}
+	return nil
 }
 
-func randomRemoveEndpointAddrs(addrs *[]core.EndpointAddress, numRm int) {
-	for i := 0; i < numRm; i++ {
-		rand.Seed(time.Now().UnixNano())
-		index := rand.Intn(len(*addrs))
-		*addrs = append((*addrs)[:index], (*addrs)[index+1:]...)
+func randomRemoveEndpointAddrs(addrs *[]core.EndpointAddress, endpointMap map[string]int, numRm int) {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	p := rand.Perm(len(*addrs))
+	// fmt.Print("Deleting")
+	for _, index := range p {
+		if numRm <= 0 {
+			break
+		}
+		// fmt.Print((*addrs)[index].IP, " ")
+		delete(endpointMap, (*addrs)[index].IP)
+		numRm--
 	}
 }
 
@@ -198,7 +226,6 @@ func createEndpoints(clientset *kubernetes.Clientset, ns string, port int32, ipA
 		},
 		metav1.CreateOptions{})
 	if err != nil {
-		fmt.Println("failed to make endpoints")
 		return err
 	}
 	return nil
@@ -214,76 +241,10 @@ func createEndpointAddresses(clientset *kubernetes.Clientset, ipAddrs []string) 
 	return addrs
 }
 
-// This creates the endpoint slices but doesn't create the endpoints themselves
-func createEndpointSlices(clientset *kubernetes.Clientset, ns string, port *int32, ipAddrs []string) error {
-	// endpoint slice can have 1000 endpoints
-	numEndpointsInSlice := 1000
-	numEndpointSlices := len(ipAddrs) / numEndpointsInSlice
-	endpointSlicePrefix := "endpoint-slice-"
-	for currEndpointSlice := 0; currEndpointSlice < numEndpointSlices; currEndpointSlice++ {
-		endpoints := createEndpointsForEndpointSlice(ipAddrs, currEndpointSlice, numEndpointsInSlice)
-
-		_, err := clientset.DiscoveryV1().EndpointSlices(ns).Create(context.Background(),
-			&discoveryv1.EndpointSlice{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      endpointSlicePrefix + strconv.Itoa(currEndpointSlice+1),
-					Namespace: ns,
-					Labels: map[string]string{
-						"kubernetes.io/service-name": svcName,
-						// "endpointslice.kubernetes.io/managed-by": "endpointslicemirroring-controller.k8s.io",
-					},
-				},
-				AddressType: discoveryv1.AddressTypeIPv4,
-				Ports:       []discoveryv1.EndpointPort{{Port: port}},
-				Endpoints:   endpoints,
-			}, metav1.CreateOptions{})
-		if err != nil {
-			return fmt.Errorf("failed to make endpoint slice %v: error %v", currEndpointSlice, err)
-		}
-	}
-	return nil
-}
-
-func createEndpointsForEndpointSlice(ipAddrs []string, currEndpointSlice, numEndpoints int) []discoveryv1.Endpoint {
-	endpoints := []discoveryv1.Endpoint{}
-	start := currEndpointSlice * numEndpoints
-	end := start + numEndpoints
-
-	for i := start; i < end; i++ {
-		// fmt.Println(start, end, len(ipAddrs))
-		endpoints = append(endpoints, discoveryv1.Endpoint{
-			Addresses: []string{ipAddrs[i]},
-			Conditions: discoveryv1.EndpointConditions{
-				Ready: pointer.Bool(true),
-			},
-		})
-	}
-	return endpoints
-}
-
-func generateEndpointIPs() []string {
-	addresses := []string{}
-	numEndpoints, _ := strconv.ParseFloat(numEndpointsToTest, 64)
-	fourthLimIPAddr := int(math.Ceil(numEndpoints / 256))
-
-	for i := 0; i <= 256; i++ {
-		for j := 0; j <= fourthLimIPAddr; j++ {
-			third := strconv.Itoa(i)
-			fourth := strconv.Itoa(j)
-			addr := initialIP + third + "." + fourth
-			addresses = append(addresses, addr)
-			if len(addresses) == int(numEndpoints) {
-				return addresses
-			}
-		}
-	}
-	return nil
-}
-
 /*
 Create service spec
 
-create endpoint slices --max-endpoints-per-slice 1000 (default 100, max 1000)
+[chose to just use endpoints] create endpoint slices --max-endpoints-per-slice 1000 (default 100, max 1000)
 create endpoints
 Burst Load Test
 

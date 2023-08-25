@@ -1,7 +1,9 @@
 #!/bin/bash
 export STRESS_CHURN="${STRESS_CHURN:-20}"
 export STRESS_ENDPOINTS="${STRESS_ENDPOINTS:-5000}"
+export STRESS_PROMETHEUS_DIR_PATH=""
 
+skip=false
 while [ $# -gt 0 ] ; do
   case $1 in
     -k | --skip)    skip=true ;;
@@ -10,27 +12,60 @@ while [ $# -gt 0 ] ; do
   esac
   shift
 done
-export STRESS_PROMETHEUS_DIR_PATH="${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn"
-echo "STRESS_PROMETHEUS_DIR_PATH ${STRESS_PROMETHEUS_DIR_PATH}"
-kubectl delete ns test
-kubectl create ns test
-kubectl label namespace test istio-injection=enabled --overwrite
-sleep 5
-kubectl -n aks-istio-system rollout restart deployment/istiod-asm-1-17
-kubectl apply -f testing/load/istio-virtualservice.yaml
 
-kubectl delete -f testing/load/detailedprometheus.yaml
-kubectl apply -f testing/load/detailedprometheus.yaml
-startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+istiodFailed=false
+churn=(0 10 20 50)
+endpoints=(5000 10000 15000)
+tries=(1 2 3)
+for try in "${tries[@]}"
+do
+  for e in "${endpoints[@]}"
+  do
+    for c in "${churn[@]}"
+    do
+      STRESS_ENDPOINTS=$e
+      STRESS_CHURN=$c
+      
+      kubectl delete ns test
+      kubectl create ns test
+      kubectl label ns test istio.io/rev=asm-1-17
+      sleep 5
+      kubectl -n aks-istio-system rollout restart deployment/istiod-asm-1-17
 
-# echo "Port forward Prometheus"
-# kubectl port-forward -n aks-istio-system  svc/prometheus 9090:9090 &
-sleep 1m
+      kubectl delete -f testing/load/detailedprometheus.yaml
+      pkill -f "port-forward"
+      kubectl apply -f testing/load/detailedprometheus.yaml
 
-go run testing/load/endpoints.go ${STRESS_ENDPOINTS} ${STRESS_CHURN}
-sleep 3m 
+      sleep 1m
+      startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      echo "Port forward Prometheus"
+      kubectl port-forward -n aks-istio-system  svc/prometheus 9090:9090 &
+      sleep 1m
 
-endTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      echo "Churn endpoints"
+      if ! $skip; then
+        blah=$(go run testing/load/endpoints.go ${STRESS_ENDPOINTS} ${STRESS_CHURN})
+        STRESS_PROMETHEUS_DIR_PATH="t${try}_${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn_${blah}"
+        echo "STRESS_PROMETHEUS_DIR_PATH ${STRESS_PROMETHEUS_DIR_PATH}"
+        sleep 13m 
+        echo "Checking if istiod failed"
+        istiodStatuses=$(kubectl get pod -l=app='istiod' -n aks-istio-system -o jsonpath='{.items[*].status.phase}')
+        statuses=($istiodStatuses)
+        for i in "${statuses[@]}"
+        do
+            if [ $i != "Running" ]; then
+                istiodFailed=true
+            fi
+        done
 
-python3 ${PWD}/capture_prometheus/prometheus.py ${startTime} ${endTime} false
-echo "Captured prometheus graphs ${startTime} ${endTime}"
+        endTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        python3 ${PWD}/capture_prometheus/prometheus.py ${startTime} ${endTime} ${istiodFailed}
+        echo "Captured prometheus graphs ${startTime} ${endTime}"
+      else
+        go run testing/load/endpoints.go ${STRESS_ENDPOINTS} ${STRESS_CHURN}
+        STRESS_PROMETHEUS_DIR_PATH="${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn_${blah}"
+        echo "STRESS_PROMETHEUS_DIR_PATH ${STRESS_PROMETHEUS_DIR_PATH}"
+      fi
+    done
+  done
+done
