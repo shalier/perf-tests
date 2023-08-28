@@ -2,8 +2,8 @@
 export RESOURCE_GROUP="${RESOURCE_GROUP:-test-asm}"
 export RESOURCE_NAME="${RESOURCE_NAME:-stress-test-asm}"
 
-export CL2_TOTAL_PODS="${CL2_TOTAL_PODS:-10}"
-export CL2_SERVICE_SIZE="${CL2_SERVICE_SIZE:-1000}"
+export CL2_TOTAL_PODS="${CL2_TOTAL_PODS:-1000}"
+export CL2_SERVICE_SIZE="${CL2_SERVICE_SIZE:-1}"
 export CL2_LOAD_TEST_THROUGHPUT="${CL2_LOAD_TEST_THROUGHPUT:-1000}"
 export CL2_REPEATS="${CL2_REPEATS:-1}"
 export ISTIOD_MEM="${ISTIOD_MEM:-2Gi}"
@@ -30,22 +30,24 @@ while [ $# -gt 0 ] ; do
   esac
   shift
 done
+kubectl -n aks-istio-system delete pod --all
+
+echo "restart istiod deployment"
+kubectl -n aks-istio-system rollout restart deployment/istiod-asm-1-17
 
 # add check if skip then need to give start/end
 CL2_SERVICE_SIZE=1
 CL2_LOAD_TEST_THROUGHPUT=1000
 if ! $skip; then
   kubectl delete -f testing/load/prometheus.yaml
-  sleep 5
+  pkill -f "port-forward"
   kubectl apply -f testing/load/prometheus.yaml
 
   startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   echo "Running test: pods-${CL2_TOTAL_PODS}, services-${CL2_SERVICE_SIZE}, load-$CL2_LOAD_TEST_THROUGHPUT, churn - $CL2_REPEATS"
-  go run ${PWD}/cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=150 --provider=aks --kubeconfig=${HOME}/.kube/config -v ${verbosity}
-  endTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
+  go run cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=150 --provider=aks --kubeconfig=${HOME}/.kube/config -v ${verbosity}
   sleep 5m 
-
+  endTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 fi
 
 echo "Checking if istiod failed"
@@ -67,10 +69,6 @@ fi
 echo "Port forward Prometheus"
 kubectl port-forward svc/prometheus 9090:9090 &
 sleep 5
-# ./server &
-# serverpid=$!
-# # ... lots of other stuff
-# kill $serverpid
 
 echo "Capturing prometheus graphs: istiod failed - ${istiodFailed}, -s ${startTime} -e ${endTime}"
 python3 ${PWD}/capture_prometheus/prometheus.py ${startTime} ${endTime} ${istiodFailed}
@@ -81,10 +79,5 @@ startTimeDeleteNS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 echo "delete test ns at ${startTimeDeleteNS}"
 testNamespaces=$(kubectl get ns -l istio.io/rev=asm-1-17 --no-headers -o jsonpath='{.items[*].metadata.name}')
 kubectl delete namespace $testNamespaces
-
-kubectl -n aks-istio-system delete pod --all
-
-echo "restart istiod deployment"
-kubectl -n aks-istio-system rollout restart deployment/istiod-asm-1-17
-
-
+endTimeDeleteNS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+echo "finished deleting test namespace ${endTimeDeleteNS}"

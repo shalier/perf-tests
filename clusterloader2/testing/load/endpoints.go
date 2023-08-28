@@ -83,7 +83,7 @@ func main() {
 		fmt.Println("failed to make endpoints", err)
 	}
 	var tickerTime time.Duration = 500
-	var testDuration time.Duration = 2 // testDuration s
+	var testDuration time.Duration = 30 // testDuration s
 	ticker := time.NewTicker(tickerTime * time.Millisecond)
 	done := make(chan bool)
 	percentage, err := strconv.Atoi(os.Args[2])

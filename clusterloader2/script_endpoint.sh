@@ -14,8 +14,8 @@ while [ $# -gt 0 ] ; do
 done
 
 istiodFailed=false
-churn=(0 10 50)
-endpoints=(20000 50000 65000)
+churn=(0 10 20 50 100)
+endpoints=(50000)
 tries=(1)
 for try in "${tries[@]}"
 do
@@ -44,7 +44,7 @@ do
       echo "Churn endpoints"
       if ! $skip; then
         blah=$(go run testing/load/endpoints.go ${STRESS_ENDPOINTS} ${STRESS_CHURN})
-        STRESS_PROMETHEUS_DIR_PATH="t${try}_${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn_${blah}"
+        STRESS_PROMETHEUS_DIR_PATH="t0_${STRESS_ENDPOINTS}endpoints_${STRESS_CHURN}percentChurn_${blah}"
         echo "STRESS_PROMETHEUS_DIR_PATH ${STRESS_PROMETHEUS_DIR_PATH}"
         sleep 15m 
         echo "Checking if istiod failed"
