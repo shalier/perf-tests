@@ -1,0 +1,90 @@
+      --add_dir_header                                      If true, adds the file directory to the header of the log messages
+      --alsologtostderr                                     log to standard error as well as files
+      --apiserver-pprof-by-client-enabled                   Whether apiserver pprof endpoint can be accessed by Kubernetes client.
+      --dry-run                                             Whether to skip running test and only compile test config
+      --enable-exec-service                                 Whether to enable exec service that allows executing arbitrary commands from a pod running in the cluster.
+      --enable-prometheus-server                            Whether to set-up the prometheus server in the cluster.
+      --enable-pushgateway                                  Whether to set-up the Pushgateway. Only work with enabled Prometheus server.
+      --etcd-certificate string                             Path to the etcd certificate on the master machine
+      --etcd-insecure-port int                              Inscure http port
+      --etcd-key string                                     Path to the etcd key on the master machine
+      --experimental-gcp-snapshot-prometheus-disk           (experimental, provider=gce|gke only) whether to snapshot Prometheus disk before Prometheus stack is torn down
+      --experimental-prometheus-disk-snapshot-name string   Name of the prometheus disk snapshot that will be created if snapshots are enabled. If not set, the prometheus disk name will be used.
+      --experimental-prometheus-snapshot-to-report-dir      (experimental) whether to save prometheus snapshot to the report-dir
+      --experimental-snapshot-project string                GCP project used where disks and snapshots are located.
+      --ginkgo.debug                                        If set, ginkgo will emit node output to files when running in parallel.
+      --ginkgo.dryRun                                       If set, ginkgo will walk the test hierarchy without actually running anything.  Best paired with -v.
+      --ginkgo.failFast                                     If set, ginkgo will stop running a test suite after a failure occurs.
+      --ginkgo.failOnPending                                If set, ginkgo will mark the test suite as failed if any specs are pending.
+      --ginkgo.flakeAttempts int                            Make up to this many attempts to run each spec. Please note that if any of the attempts succeed, the suite will not be failed. But any failures will still be recorded. (default 1)
+      --ginkgo.focus string                                 If set, ginkgo will only run specs that match this regular expression.
+      --ginkgo.noColor                                      If set, suppress color output in default reporter.
+      --ginkgo.noisyPendings                                If set, default reporter will shout about pending tests. (default true)
+      --ginkgo.noisySkippings                               If set, default reporter will shout about skipping tests. (default true)
+      --ginkgo.parallel.node int                            This worker node's (one-indexed) node number.  For running specs in parallel. (default 1)
+      --ginkgo.parallel.streamhost string                   The address for the server that the running nodes should stream data to.
+      --ginkgo.parallel.synchost string                     The address for the server that will synchronize the running nodes.
+      --ginkgo.parallel.total int                           The total number of worker nodes.  For running specs in parallel. (default 1)
+      --ginkgo.progress                                     If set, ginkgo will emit progress information as each spec runs to the GinkgoWriter.
+      --ginkgo.randomizeAllSpecs                            If set, ginkgo will randomize all specs together.  By default, ginkgo only randomizes the top level Describe, Context and When groups.
+      --ginkgo.regexScansFilePath                           If set, ginkgo regex matching also will look at the file path (code location).
+      --ginkgo.reportFile string                            Override the default reporter output file path.
+      --ginkgo.reportPassed                                 If set, default reporter prints out captured output of passed tests.
+      --ginkgo.seed int                                     The seed used to randomize the spec suite. (default 1689909696)
+      --ginkgo.skip string                                  If set, ginkgo will only run specs that do not match this regular expression.
+      --ginkgo.skipMeasurements                             If set, ginkgo will skip any measurement specs.
+      --ginkgo.slowSpecThreshold float                      (in seconds) Specs that take longer to run than this threshold are flagged as slow by the default reporter. (default 5)
+      --ginkgo.succinct                                     If set, default reporter prints out a very succinct report
+      --ginkgo.trace                                        If set, default reporter prints out the full stack trace when a failure occurs
+      --ginkgo.v                                            If set, default reporter print out all specs as they begin.
+      --k8s-clients-number int                              (Optional) Number of k8s clients to use. If 0, will create 1 client per 100 nodes
+      --kubeconfig string                                   Path to the kubeconfig file (if not empty, --run-from-cluster must be false)
+      --kubelet-port int                                    Port of the kubelet to use
+      --kubemark-root-kubeconfig string                     DEPRECATED: Please use provider-config="ROOT_KUBECONFIG=<value>". Path the to kubemark root kubeconfig file, i.e. kubeconfig of the cluster where kubemark cluster is run. Ignored if provider != kubemark
+      --log_backtrace_at traceLocation                      when logging hits line file:N, emit a stack trace (default :0)
+      --log_dir string                                      If non-empty, write log files in this directory
+      --log_file string                                     If non-empty, use this log file
+      --log_file_max_size uint                              Defines the maximum size a log file can grow to. Unit is megabytes. If the value is 0, the maximum file size is unlimited. (default 1800)
+      --logtostderr                                         log to standard error instead of files (default true)
+      --master-internal-ip strings                          Cluster internal/private IP of the master vm, supports multiple values when separated by commas
+      --masterip strings                                    Hostname/IP of the master node, supports multiple values when separated by commas
+      --mastername string                                   Name of the masternode
+      --node-preload-images strings                         List of images to preload on each node in the test cluster before executing tests
+      --nodes int                                           number of nodes
+      --one_output                                          If true, only write logs to their native severity level (vs also writing to each lower severity level)
+      --overwrite-test-config stringArray                   Overwrite test config with specific value, used as parameter1.parameter2=value, for example 'Namespace.Prefix=custom-prefix'
+      --port int                                            Port to be used by http server with pprof. (default 8000)
+      --prometheus-apiserver-scrape-port int                Port for scraping kube-apiserver (default 443).
+      --prometheus-kube-proxy-selector-key string           Label key used to scrape kube proxy.
+      --prometheus-memory-request string                    Memory request to be used by promehteus.
+      --prometheus-pvc-storage-class string                 Storage class used with prometheus persistent volume claim.
+      --prometheus-ready-timeout time.Duration              Timeout for waiting for Prometheus stack to become healthy. (default 0s)
+      --prometheus-scrape-anet                              Whether to scrape anet pods.
+      --prometheus-scrape-cilium-operator                   Whether to scrape cilium-operator pods.
+      --prometheus-scrape-etcd                              Whether to scrape etcd metrics.
+      --prometheus-scrape-kube-proxy                        Whether to scrape kube proxy.
+      --prometheus-scrape-kube-state-metrics                Whether to scrape kube-state-metrics. Only run occasionally.
+      --prometheus-scrape-kubelets                          Whether to scrape kubelets (nodes + master). Experimental, may not work in larger clusters. Requires heapster node to be at least n1-standard-4, which needs to be provided manually.
+      --prometheus-scrape-master-kubelets                   Whether to scrape kubelets running on master nodes.
+      --prometheus-scrape-masters-with-public-ips           Whether to scrape master machines using public ips, instead of private.
+      --prometheus-scrape-metrics-server                    Whether to scrape metrics-server. Only run occasionally.
+      --prometheus-scrape-node-exporter                     Whether to scrape node exporter metrics.
+      --prometheus-scrape-node-local-dns                    Whether to scrape node-local-dns pods.
+      --prometheus-scrape-windows-node-exporter             Whether to scrape Windows node exporter metrics.
+      --prometheus-storage-class-provisioner string         Volumes plugin used to provision PVs for Prometheus.
+      --prometheus-storage-class-volume-type string         Volume types of storage class, This will be different depending on the provisioner.
+      --provider string                                     Cluster provider name
+      --provider-configs strings                            Cluster provider configurations
+      --report-dir string                                   Path to the directory where the reports should be saved. Default is empty, which cause reports being written to standard output.
+      --run-from-cluster                                    Whether to use in-cluster client-config to create a client, --kubeconfig must be unset
+      --skip-cluster-verification                           Whether to skip the cluster verification, which expects at least one schedulable node in the cluster
+      --skip-steps stringArray                              Name of steps to skip in test
+      --skip_headers                                        If true, avoid header prefixes in the log messages
+      --skip_log_headers                                    If true, avoid headers when opening log files
+      --stderrthreshold severity                            logs at or above this threshold go to stderr (default 2)
+      --tear-down-prometheus-server                         Whether to tear-down the prometheus server after tests (if set-up).
+      --testconfig stringArray                              Paths to the test config files
+      --testoverrides stringArray                           Paths to the config overrides file. The latter overrides take precedence over changes in former files.
+      --testsuite string                                    Path to the test suite config file
+  -v, --v Level                                             number for the log level verbosity
+      --vmodule moduleSpec                                  comma-separated list of pattern=N settings for file-filtered logging

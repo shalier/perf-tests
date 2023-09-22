@@ -2,7 +2,7 @@ name: deployment-churn
 automanagednamespaces: 0
 namespace:
   number: 1
-  prefix: test-6ffc4h
+  prefix: test-tfew0m
   deletestalenamespaces: true
   deleteautomanagednamespaces: false
   enableexistingnamespaces: false
@@ -19,8 +19,8 @@ steps:
   module:
     path: ""
     params: {}
-  name: Log - nodes=150, namespaces=1, totalPods=2000,deploymentQPS=1000, churn=1,
-    serviceSize=1
+  name: Log - nodes=200, namespaces=1, totalPods=17000,deploymentQPS=0.058823529411764705,
+    churn=1, serviceSize=1
 - phases: []
   measurements:
   - method: WaitForControlledPodsRunning
@@ -64,7 +64,7 @@ steps:
       min: 1
       max: 1
       basename: null
-    replicaspernamespace: 2000
+    replicaspernamespace: 1
     tuningset: DeploymentCreateQps
     objectbundle:
     - basename: deployment-churn
@@ -74,7 +74,7 @@ steps:
         Group: deployment-churn
         Image: mcr.microsoft.com/oss/kubernetes/pause:3.6
         MemoryRequest: 50M
-        Replicas: 1
+        Replicas: 17000
         SvcName: large-service
         serviceSize: 1
       listunknownobjectoptions: null
@@ -82,7 +82,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Creating Deployments- iteration 0
+  name: Creating Deployments
 - phases: []
   measurements:
   - method: WaitForControlledPodsRunning
@@ -93,7 +93,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Waiting for latency pods to be running - iteration 0
+  name: Waiting for latency pods to be running
 tuningsets:
 - name: Sequence
   initialdelay: 0
@@ -129,7 +129,7 @@ tuningsets:
 - name: DeploymentCreateQps
   initialdelay: 0
   qpsload:
-    qps: 1000
+    qps: 0.058823529411764705
   randomizedload: null
   steppedload: null
   timelimitedload: null
@@ -139,7 +139,7 @@ tuningsets:
 - name: DeploymentDeleteQps
   initialdelay: 0
   qpsload:
-    qps: 1000
+    qps: 0.058823529411764705
   randomizedload: null
   steppedload: null
   timelimitedload: null

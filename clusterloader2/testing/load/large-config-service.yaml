@@ -13,5 +13,5 @@ steps:
     replicasPerNamespace: {{$replicasPerNamespace}}
     tuningSet: Sequence
     objectBundle:
-    - basename: large-service
+    - basename: test-service
       objectTemplatePath: {{$objectTemplatePath}}

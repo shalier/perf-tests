@@ -260,7 +260,7 @@ spec:
             - --webhook-url=http://127.0.0.1:9090/-/reload
           resources:
             requests:
-              memory: 50G
+              memory: 230G
               cpu: 2
           volumeMounts:
             - name: config-volume

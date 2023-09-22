@@ -200,6 +200,12 @@ func CreateNamespace(c clientset.Interface, namespace string) error {
 		_, err := c.CoreV1().Namespaces().Create(context.TODO(), &apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: namespace, Labels: map[string]string{"istio.io/rev": "asm-1-17"}}}, metav1.CreateOptions{})
 		return err
 	}
+	// if namespace == "cluster-loader" {
+	// 	createFunc = func() error {
+	// 		_, err := c.CoreV1().Namespaces().Create(context.TODO(), &apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: namespace}}, metav1.CreateOptions{})
+	// 		return err
+	// 	}
+	// }
 	return RetryWithExponentialBackOff(RetryFunction(createFunc, Allow(apierrs.IsAlreadyExists)))
 }
 

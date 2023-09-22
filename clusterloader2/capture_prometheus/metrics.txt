@@ -1,16 +1,27 @@
 sum(rate(apiserver_request_total{job="kubernetes-apiservers",code=~"2.."}[1m]))*100/sum(rate(apiserver_request_total{job="kubernetes-apiservers"}[1m]))
 sum(rate(apiserver_request_total{job="kubernetes-apiservers",code=~"[45].."}[1m]))*100/sum(rate(apiserver_request_total{job="kubernetes-apiservers"}[1m]))
+max by (code)(rate(apiserver_request_total{code=~"^(?:5..)$"}[1m])) >0
+max by (code)(rate(apiserver_request_total{code=~"^(?:4..)$"}[1m])) >0
 max by (code)(rate(apiserver_request_total{code=~"^(?:5..)$"}[1m]) / rate(apiserver_request_total[1m]))
 max by (code)(rate(apiserver_request_total{code=~"^(?:4..)$"}[1m]) / rate(apiserver_request_total[1m]))
 histogram_quantile(0.99, sum(rate(apiserver_request_slo_duration_seconds_bucket{job="kubernetes-apiservers"}[1m])) by (verb, le))
 sum(rate(apiserver_request_total[1m])) by (verb)
+histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket{job="kubernetes-apiservers"}[1m])) by (le,operation))
 max by (name)(rate(workqueue_adds_total{job="kubernetes-apiservers"}[1m]))
 rate(process_cpu_seconds_total{job="kubernetes-apiservers"}[1m])
-process_resident_memory_bytes{job="kubernetes-apiservers"}/10^6
-histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket{job="kubernetes-apiservers"}[1m])) by (le,operation))
+process_resident_memory_bytes{job="kubernetes-apiservers"}/10^9
 max by (resource)(rate(apiserver_storage_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
 max by (resource_prefix)(rate(apiserver_cache_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
-max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="discovery", pod=~"istio.*"}[1m])))
-max by (pod, container)(ceil(rate(container_cpu_usage_seconds_total{container="coredns"}[1m])))*1000
-max by (pod, container)(container_memory_working_set_bytes{container="discovery", pod=~"istio.*"})/10^6
-max by (pod, container)(container_memory_working_set_bytes{container="coredns"})/10^6
+max by (container)(ceil(rate(container_cpu_usage_seconds_total{container="discovery"}[1m])))
+max by (container)(container_memory_working_set_bytes{container="discovery"})/10^9
+max by (container)(container_memory_working_set_bytes{container="coredns"})/10^9
+max by (container)(ceil(rate(container_cpu_usage_seconds_total{container="coredns"}[1m])))
+max by (container)(container_memory_working_set_bytes{container="istio-proxy"})/10^9
+sidecar_injection_requests_total
+count(istio_agent_xds_proxy_requests)
+sum(increase(envoy_cluster_upstream_rq_total[1y]))
+sum by (namespace)(istio_agent_xds_proxy_requests)
+sum by (namespace)(increase(istio_agent_xds_proxy_responses[1y]))
+sum by (namespace)(istio_agent_pilot_xds)
+sum by (namespace)(increase(istio_agent_scrapes_total[1y]))
+sum by (namespace)(increase(istio_agent_scrape_failures_total[1y]))

@@ -1,27 +1,26 @@
-name: deployment-churn
+name: test-deployment
 
-{{$churn := DefaultParam .CL2_REPEATS 1}}  # How many times to repeat the churn phase
+{{$churn := DefaultParam .CL2_CHURNS 0}}  # Percentage to Churn
 {{$totalPods := DefaultParam .CL2_TOTAL_PODS 2000}}
 {{$serviceSize := DefaultParam .CL2_SERVICE_SIZE 1}}
-{{$namespaces := 1}}
-{{$deploymentSize := DefaultParam .CL2_DEPLOYMENT_SIZE 1}}
+{{$deploymentSize := $totalPods}}
 {{$loadTestThroughput := DefaultParam .CL2_LOAD_TEST_THROUGHPUT 1000}}
 
+
+{{$deleteDeploymentSize:=MultiplyInt $churn $totalPods 0.01}}
+{{$newDeploymentSize:=SubtractInt $totalPods $deleteDeploymentSize }}
 {{$latencyPodImage := DefaultParam .CL2_LATENCY_POD_IMAGE "mcr.microsoft.com/oss/kubernetes/pause:3.6"}}
 {{$latencyPodCpu := DefaultParam .CL2_LATENCY_POD_CPU 10}} #mCPU
 {{$latencyPodMemory := DefaultParam .CL2_LATENCY_POD_MEMORY 50}} #MB
 
 {{$podStartupLatencyThreshold := DefaultParam .CL2_POD_STARTUP_LATENCY_THRESHOLD "60s"}}
 {{$deploymentsPerNamespace := DivideInt $totalPods $deploymentSize}}
-{{$10percentPod:= MultiplyInt 0.9 $totalPods}}
-{{$20percentPod:= MultiplyInt 0.8 $totalPods}}
-{{$50percentPod:= MultiplyInt 0.5 $totalPods}}
 
 {{$deploymentQPS := DivideFloat $loadTestThroughput $deploymentSize}}
-{{$defaultQPS := DefaultParam .CL2_DEFAULT_QPS 1000}}
+# {{$defaultQPS := DefaultParam .CL2_DEFAULT_QPS 1000}}
 
 namespace:
-  number: {{$namespaces}} # testing everything in one namespace
+  number: 1 # testing everything in one namespace
   deleteStaleNamespaces: true
   deleteAutomanagedNamespaces: false
   enableExistingNamespaces: false
@@ -30,40 +29,31 @@ tuningSets:
   - name: Sequence
     parallelismLimitedLoad:
       parallelismLimit: 1
-  # TODO(https://github.com/kubernetes/perf-tests/issues/1024): This TuningSet is used only for pod-startup-latency, get rid of it
+  #TODO(https://github.com/kubernetes/perf-tests/issues/1024): This TuningSet is used only for pod-startup-latency, get rid of it
   # Uniform5qps: for each running phase, use 5 qps.
-  - name: Uniform5qps
-    qpsLoad:
-      qps: 5
+  # - name: Uniform5qps
+  #   qpsLoad:
+  #     qps: 5
   # default is a tuningset that is meant to be used when we don't have any specific requirements on pace of operations.
-  - name: default
-    globalQPSLoad:
-      qps: {{$defaultQPS}}
-      burst: 1
-  - name: DeploymentCreateQps
-    qpsLoad:
-      qps: {{$deploymentQPS}}
-  - name: DeploymentDeleteQps
+  # - name: default
+  #   globalQPSLoad:
+  #     qps: {{$defaultQPS}}
+  #     burst: 1
+  - name: DeploymentQPS
     qpsLoad:
       qps: {{$deploymentQPS}}
 
 steps:
-  - name: Log - nodes={{.Nodes}}, namespaces={{$namespaces}}, totalPods={{$totalPods}},deploymentQPS={{$deploymentQPS}}, churn={{$churn}}, serviceSize={{$serviceSize}}
+  - name: Log - nodes={{.Nodes}},   totalPods={{$totalPods}},deploymentQPS={{$deploymentQPS}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
     measurements:
     - Identifier: Dummy
       Method: Sleep
       Params:
         action: start
-        duration: 1ms
+        duration: 5m
 
   - name: start measurements
     measurements:
-      # - Identifier: PodStartupLatency
-      #   Method: PodStartupLatency
-      #   Params:
-      #     action: start
-      #     labelSelector: group = deployment-churn
-          # threshold: {{$podStartupLatencyThreshold}}
       - Identifier: WaitForRunningLatencyDeployments
         Method: WaitForControlledPodsRunning
         Params:
@@ -71,7 +61,7 @@ steps:
           checkIfPodsAreUpdated: true
           apiVersion: apps/v1
           kind: Deployment
-          labelSelector: group = deployment-churn
+          labelSelector: group = test-deployment
           operationTimeout: 60m
       - Identifier: SchedulingThroughput
         Method: SchedulingThroughput
@@ -82,105 +72,122 @@ steps:
       path: large-config-service.yaml
       params:
         actionName: "Creating"
-        namespaces: {{$namespaces}}
+        namespaces: 1
         replicasPerNamespace: {{$serviceSize}}
         objectTemplatePath: service.yaml
 
-  {{range $i := Loop $churn}}
-  - name: Creating Deployments- iteration {{$i}}
+  - name: Creating Deployments
     phases:
       - namespaceRange:
           min: 1
-          max: {{$namespaces}}
+          max: 1
         replicasPerNamespace: {{$deploymentsPerNamespace}}
-        tuningSet: DeploymentCreateQps
+        tuningSet: DeploymentQPS
         objectBundle:
-          - basename: deployment-churn
+          - basename: test-deployment
             objectTemplatePath: simple-deployment.yaml
             templateFillMap:
               Replicas: {{$deploymentSize}}
-              Group: deployment-churn
+              Group: test-deployment
               CpuRequest: {{$latencyPodCpu}}m
               MemoryRequest: {{$latencyPodMemory}}M
               Image: {{$latencyPodImage}}
-              SvcName: large-service
+              SvcName: test-service
               serviceSize: {{$serviceSize}}
 
-  - name: Waiting for latency pods to be running - iteration {{$i}}
+  - name: Waiting for latency pods to be running
     measurements:
       - Identifier: WaitForRunningLatencyDeployments
         Method: WaitForControlledPodsRunning
         Params:
           action: gather
-  {{ if gt $i 0}}
-  {{ if eq $i 1 }}
-  - name: Deleting {{$10percentPod}} Deployments - iteration {{$i}}
-    phases:
-      - namespaceRange:
-          min: 1
-          max: {{$namespaces}}
-        replicasPerNamespace: {{ $10percentPod }}
-  {{ end }}
-  {{ if eq $i 2 }}
-  - name: Deleting {{$20percentPod}} Deployments - iteration {{$i}}
-    phases:
-      - namespaceRange:
-          min: 1
-          max: {{$namespaces}}
-        replicasPerNamespace: {{ $20percentPod }}
-  {{ end }}
-  {{ if eq $i 3 }}
-  - name: Deleting {{$50percentPod}} Deployments - iteration {{$i}}
-    phases:
-      - namespaceRange:
-          min: 1
-          max: {{$namespaces}}
-        replicasPerNamespace: {{ $50percentPod }}
-  {{ end }}
-        tuningSet: DeploymentCreateQps
+        tuningSet: DeploymentQPS
         objectBundle:
-          - basename: deployment-churn
+          - basename: test-deployment
             objectTemplatePath: simple-deployment.yaml
-  - name: Waiting for latency pods to be deleted - iteration {{$i}}
+  - name: Log - nodes={{.Nodes}},   totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
     measurements:
-      - Identifier: WaitForRunningLatencyDeployments
-        Method: WaitForControlledPodsRunning
-        Params:
-          action: gather
-  - name: Churn back up Deployments - iteration {{$i}}
-    phases:
-      - namespaceRange:
-          min: 1
-          max: {{$namespaces}}
-        replicasPerNamespace: {{$deploymentsPerNamespace}}
-        tuningSet: DeploymentCreateQps
-        objectBundle:
-          - basename: deployment-churn
-            objectTemplatePath: simple-deployment.yaml
-            templateFillMap:
-              Replicas: {{$deploymentSize}}
-              Group: deployment-churn
-              CpuRequest: {{$latencyPodCpu}}m
-              MemoryRequest: {{$latencyPodMemory}}M
-              Image: {{$latencyPodImage}}
-              SvcName: large-service
-              serviceSize: {{$serviceSize}}
-  - name: Sleep 5m - iteration {{$i}}
-    measurements:
-    - Identifier: sleep
+    - Identifier: Dummy
       Method: Sleep
+      tuningSet: DeploymentQPS
       Params:
+        action: start
         duration: 5m
-  {{end}}
-  {{end}}
 
-  # - name: Collecting measurements
-  #   measurements:
-  #     - Identifier: PodStartupLatency
-  #       Method: PodStartupLatency
-  #       Params:
-  #         action: gather
-  #     - Identifier: SchedulingThroughput
-  #       Method: SchedulingThroughput
-  #       Params:
-  #         action: gather
+  - name: Deleting pods
+    phases:
+      - namespaceRange:
+          min: 1
+          max: 1
+        replicasPerNamespace: {{$deploymentsPerNamespace}}
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+            templateFillMap:
+              Replicas: {{$newDeploymentSize}}
+              Group: test-deployment
+              CpuRequest: {{$latencyPodCpu}}m
+              MemoryRequest: {{$latencyPodMemory}}M
+              Image: {{$latencyPodImage}}
+              SvcName: test-service
+              serviceSize: {{$serviceSize}}
+  - name: Waiting for latency pods to be running
+    measurements:
+      - Identifier: WaitForRunningLatencyDeployments
+        Method: WaitForControlledPodsRunning
+        Params:
+          action: gather
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+  - name: Sleep 10m After Create - nodes={{.Nodes}}, totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
+    measurements:
+      - Identifier: Wait
+        Method: Sleep
+        tuningSet: DeploymentQPS
+        Params:
+          duration: 10m
+  - name: Re-create pods
+    phases:
+      - namespaceRange:
+          min: 1
+          max: 1
+        replicasPerNamespace: {{$deploymentsPerNamespace}}
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+            templateFillMap:
+              Replicas: {{$deploymentSize}}
+              Group: test-deployment
+              CpuRequest: {{$latencyPodCpu}}m
+              MemoryRequest: {{$latencyPodMemory}}M
+              Image: {{$latencyPodImage}}
+              SvcName: test-service
+              serviceSize: {{$serviceSize}}
+  - name: Waiting for latency pods to be running
+    measurements:
+      - Identifier: WaitForRunningLatencyDeployments
+        Method: WaitForControlledPodsRunning
+        Params:
+          action: gather
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+
+  - name: Sleep 15m - nodes={{.Nodes}}, totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, deleteDeploymentSize={{$deleteDeploymentSize}}
+    measurements:
+      - Identifier: Wait
+        Method: Sleep
+        tuningSet: DeploymentQPS
+        Params:
+          duration: 15m
+  - name: Collecting saturation pod measurements
+    measurements:
+    - Identifier: SchedulingThroughput
+      Method: SchedulingThroughput
+      Params:
+        action: gather
