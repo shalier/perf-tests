@@ -10,12 +10,13 @@ histogram_quantile(0.99, sum(rate(etcd_request_duration_seconds_bucket{job="kube
 max by (name)(rate(workqueue_adds_total{job="kubernetes-apiservers"}[1m]))
 rate(process_cpu_seconds_total{job="kubernetes-apiservers"}[1m])
 process_resident_memory_bytes{job="kubernetes-apiservers"}/10^9
-max by (resource)(rate(apiserver_storage_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
+max by (resource)(rate(apiserver_storage_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))>0
 max by (resource_prefix)(rate(apiserver_cache_list_fetched_objects_total{job="kubernetes-apiservers"}[1m]))
 max by (container)(ceil(rate(container_cpu_usage_seconds_total{container="discovery"}[1m])))
 max by (container)(container_memory_working_set_bytes{container="discovery"})/10^9
 max by (container)(container_memory_working_set_bytes{container="coredns"})/10^9
 max by (container)(ceil(rate(container_cpu_usage_seconds_total{container="coredns"}[1m])))
+max by (container)(ceil(rate(container_cpu_usage_seconds_total{container="istio-proxy"}[1m])))
 max by (container)(container_memory_working_set_bytes{container="istio-proxy"})/10^9
 sidecar_injection_requests_total
 count(istio_agent_xds_proxy_requests)

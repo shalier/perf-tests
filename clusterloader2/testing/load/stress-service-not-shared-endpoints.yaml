@@ -1,0 +1,111 @@
+name: test-deployment
+
+{{$totalPods := DefaultParam .CL2_TOTAL_PODS 10}}
+{{$serviceSize := DefaultParam .CL2_SERVICE_SIZE 5}}
+{{$deploymentSize := $totalPods}}
+{{$loadTestThroughput := DefaultParam .CL2_LOAD_TEST_THROUGHPUT 1000}}
+
+
+{{$latencyPodImage := DefaultParam .CL2_LATENCY_POD_IMAGE "mcr.microsoft.com/oss/kubernetes/pause:3.6"}}
+{{$latencyPodCpu := DefaultParam .CL2_LATENCY_POD_CPU 10}} #mCPU
+{{$latencyPodMemory := DefaultParam .CL2_LATENCY_POD_MEMORY 50}} #MB
+
+{{$podStartupLatencyThreshold := DefaultParam .CL2_POD_STARTUP_LATENCY_THRESHOLD "60s"}}
+{{$deploymentsPerNamespace := $serviceSize}}
+
+{{$numSidecars := MultiplyInt $totalPods $serviceSize}}
+{{$deploymentQPS := DivideFloat $loadTestThroughput $numSidecars }}
+
+namespace:
+  number: 1 # testing everything in one namespace
+  deleteStaleNamespaces: true
+  deleteAutomanagedNamespaces: false
+  enableExistingNamespaces: false
+
+tuningSets:
+  - name: Sequence
+    parallelismLimitedLoad:
+      parallelismLimit: 1
+  - name: DeploymentQPS
+    qpsLoad:
+      qps: {{$loadTestThroughput}}
+
+steps:
+  - name: Log - nodes={{.Nodes}}, endpoints={{$totalPods}}, deploymentQPS={{$deploymentQPS}}, serviceSize={{$serviceSize}}
+    measurements:
+    - Identifier: Dummy
+      Method: Sleep
+      Params:
+        action: start
+        duration: 1s
+
+  - name: start measurements
+    measurements:
+      - Identifier: WaitForRunningLatencyDeployments
+        Method: WaitForControlledPodsRunning
+        Params:
+          action: start
+          checkIfPodsAreUpdated: true
+          apiVersion: apps/v1
+          kind: Deployment
+          labelSelector: group = test-deployment
+          operationTimeout: 60m
+      - Identifier: SchedulingThroughput
+        Method: SchedulingThroughput
+        Params:
+          action: start
+  
+  - module:
+      path: large-config-service.yaml
+      params:
+        actionName: "Creating"
+        namespaces: 1
+        replicasPerNamespace: {{$serviceSize}}
+        objectTemplatePath: service.yaml
+        selectorLabel: test-service
+        sharedEndpoints: false
+
+  - name: Creating Deployments
+    phases:
+      - namespaceRange:
+          min: 1
+          max: 1
+        replicasPerNamespace: {{$deploymentsPerNamespace}}
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+            templateFillMap:
+              Replicas: {{$deploymentSize}}
+              Group: test-deployment
+              CpuRequest: {{$latencyPodCpu}}m
+              MemoryRequest: {{$latencyPodMemory}}M
+              Image: {{$latencyPodImage}}
+              SvcName: test-service
+              sharedEndpoints: false
+
+  - name: Waiting for latency pods to be running
+    measurements:
+      - Identifier: WaitForRunningLatencyDeployments
+        Method: WaitForControlledPodsRunning
+        Params:
+          action: gather
+        tuningSet: DeploymentQPS
+        objectBundle:
+          - basename: test-deployment
+            objectTemplatePath: simple-deployment.yaml
+
+  - name: Sleep 15m - nodes={{.Nodes}}, totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, serviceSize={{$serviceSize}}
+    measurements:
+      - Identifier: Wait
+        Method: Sleep
+        tuningSet: DeploymentQPS
+        Params:
+          duration: 15m
+
+  - name: Collecting saturation pod measurements
+    measurements:
+    - Identifier: SchedulingThroughput
+      Method: SchedulingThroughput
+      Params:
+        action: gather

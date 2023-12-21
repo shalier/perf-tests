@@ -2,7 +2,7 @@ name: test-deployment
 automanagednamespaces: 0
 namespace:
   number: 1
-  prefix: test-ofriil
+  prefix: test-gjw2ei
   deletestalenamespaces: true
   deleteautomanagednamespaces: false
   enableexistingnamespaces: false
@@ -13,14 +13,14 @@ steps:
   - method: Sleep
     params:
       action: start
-      duration: 5m
+      duration: 1s
     identifier: Dummy
     instances: []
   module:
     path: ""
     params: {}
-  name: Log - nodes=450,   totalPods=5000,deploymentQPS=0.2, churn=0, serviceSize=1,
-    newDeploymentSize=5000
+  name: Log - nodes=400, totalPods=45000, deploymentQPS=1000, churn=25, serviceSize=1,
+    newDeploymentSize=33750
 - phases: []
   measurements:
   - method: WaitForControlledPodsRunning
@@ -58,7 +58,7 @@ steps:
   module:
     path: ""
     params: {}
-  name: Creating k8s services
+  name: Creating k8s services true
 - phases:
   - namespacerange:
       min: 1
@@ -74,7 +74,7 @@ steps:
         Group: test-deployment
         Image: mcr.microsoft.com/oss/kubernetes/pause:3.6
         MemoryRequest: 50M
-        Replicas: 5000
+        Replicas: 45000
         SvcName: test-service
         serviceSize: 1
       listunknownobjectoptions: null
@@ -99,14 +99,14 @@ steps:
   - method: Sleep
     params:
       action: start
-      duration: 5m
+      duration: 1m
     identifier: Dummy
     instances: []
   module:
     path: ""
     params: {}
-  name: Log - nodes=450,   totalPods=5000,deploymentQPS=1000, churn=0, serviceSize=1,
-    newDeploymentSize=5000
+  name: Log - nodes=400, totalPods=45000, deploymentQPS=1000, churn=25, serviceSize=1,
+    newDeploymentSize=33750
 - phases:
   - namespacerange:
       min: 1
@@ -122,7 +122,7 @@ steps:
         Group: test-deployment
         Image: mcr.microsoft.com/oss/kubernetes/pause:3.6
         MemoryRequest: 50M
-        Replicas: 5000
+        Replicas: 33750
         SvcName: test-service
         serviceSize: 1
       listunknownobjectoptions: null
@@ -152,8 +152,8 @@ steps:
   module:
     path: ""
     params: {}
-  name: Sleep 10m After Create - nodes=450, totalPods=5000,deploymentQPS=1000, churn=0,
-    serviceSize=1, newDeploymentSize=5000
+  name: Sleep 10m After Create - nodes=400, totalPods=45000,deploymentQPS=1000, churn=25,
+    serviceSize=1, newDeploymentSize=33750
 - phases:
   - namespacerange:
       min: 1
@@ -169,7 +169,7 @@ steps:
         Group: test-deployment
         Image: mcr.microsoft.com/oss/kubernetes/pause:3.6
         MemoryRequest: 50M
-        Replicas: 5000
+        Replicas: 45000
         SvcName: test-service
         serviceSize: 1
       listunknownobjectoptions: null
@@ -199,8 +199,8 @@ steps:
   module:
     path: ""
     params: {}
-  name: Sleep 15m - nodes=450, totalPods=5000,deploymentQPS=1000, churn=0, serviceSize=1,
-    deleteDeploymentSize=0
+  name: Sleep 15m - nodes=400, totalPods=45000,deploymentQPS=1000, churn=25, serviceSize=1,
+    deleteDeploymentSize=11250
 - phases: []
   measurements:
   - method: SchedulingThroughput
@@ -226,7 +226,7 @@ tuningsets:
 - name: DeploymentQPS
   initialdelay: 0
   qpsload:
-    qps: 0.2
+    qps: 1000
   randomizedload: null
   steppedload: null
   timelimitedload: null

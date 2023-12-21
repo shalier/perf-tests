@@ -3,6 +3,7 @@
 {{$namespaces := .namespaces}}
 {{$replicasPerNamespace := .replicasPerNamespace}}
 {{$objectTemplatePath:= .objectTemplatePath}}
+{{$selectorLabel:= .selectorLabel}}
 
 steps:
 - name: "{{$actionName}} k8s services"
@@ -15,3 +16,4 @@ steps:
     objectBundle:
     - basename: test-service
       objectTemplatePath: {{$objectTemplatePath}}
+      selectorLabel: {{$selectorLabel}}

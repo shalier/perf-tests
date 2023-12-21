@@ -1,0 +1,319 @@
+2023-10-15T01:54:27.425581Z	info	FLAG: --concurrency="2"
+2023-10-15T01:54:27.425614Z	info	FLAG: --domain="test-c3nilt-1.svc.cluster.local"
+2023-10-15T01:54:27.425655Z	info	FLAG: --help="false"
+2023-10-15T01:54:27.425679Z	info	FLAG: --log_as_json="false"
+2023-10-15T01:54:27.425685Z	info	FLAG: --log_caller=""
+2023-10-15T01:54:27.425691Z	info	FLAG: --log_output_level="default:info"
+2023-10-15T01:54:27.425793Z	info	FLAG: --log_rotate=""
+2023-10-15T01:54:27.425815Z	info	FLAG: --log_rotate_max_age="30"
+2023-10-15T01:54:27.425822Z	info	FLAG: --log_rotate_max_backups="1000"
+2023-10-15T01:54:27.425828Z	info	FLAG: --log_rotate_max_size="104857600"
+2023-10-15T01:54:27.425835Z	info	FLAG: --log_stacktrace_level="default:none"
+2023-10-15T01:54:27.425848Z	info	FLAG: --log_target="[stdout]"
+2023-10-15T01:54:27.425862Z	info	FLAG: --meshConfig="./etc/istio/config/mesh"
+2023-10-15T01:54:27.425867Z	info	FLAG: --outlierLogPath=""
+2023-10-15T01:54:27.425872Z	info	FLAG: --proxyComponentLogLevel="misc:error"
+2023-10-15T01:54:27.425877Z	info	FLAG: --proxyLogLevel="warning"
+2023-10-15T01:54:27.425881Z	info	FLAG: --serviceCluster="istio-proxy"
+2023-10-15T01:54:27.425886Z	info	FLAG: --stsPort="0"
+2023-10-15T01:54:27.425892Z	info	FLAG: --templateFile=""
+2023-10-15T01:54:27.425898Z	info	FLAG: --tokenManagerPlugin="GoogleTokenExchange"
+2023-10-15T01:54:27.425906Z	info	FLAG: --vklog="0"
+2023-10-15T01:54:27.425913Z	info	Version 1.17-dev-a781f9ee6c511d8f22140d8990c31e577b2a9676-Clean
+2023-10-15T01:54:27.426033Z	warn	failed running ulimit command: 
+2023-10-15T01:54:27.426204Z	info	Proxy role	ips=[10.224.94.166] type=sidecar id=test-deployment-0-554f77677b-zf7j6.test-c3nilt-1 domain=test-c3nilt-1.svc.cluster.local
+2023-10-15T01:54:27.426304Z	info	Apply proxy config from env {"discoveryAddress":"istiod-asm-1-17.aks-istio-system.svc:15012","tracing":{"zipkin":{"address":"zipkin.aks-istio-system:9411"}},"gatewayTopology":{"numTrustedProxies":1},"image":{"imageType":"distroless"}}
+
+2023-10-15T01:54:27.430359Z	info	Effective config: binaryPath: /usr/local/bin/envoy
+concurrency: 2
+configPath: ./etc/istio/proxy
+controlPlaneAuthPolicy: MUTUAL_TLS
+discoveryAddress: istiod-asm-1-17.aks-istio-system.svc:15012
+drainDuration: 45s
+gatewayTopology:
+  numTrustedProxies: 1
+image:
+  imageType: distroless
+proxyAdminPort: 15000
+serviceCluster: istio-proxy
+statNameLength: 189
+statusPort: 15020
+terminationDrainDuration: 5s
+tracing:
+  zipkin:
+    address: zipkin.aks-istio-system:9411
+
+2023-10-15T01:54:27.430392Z	info	JWT policy is third-party-jwt
+2023-10-15T01:54:27.430396Z	info	using credential fetcher of JWT type in cluster.local trust domain
+2023-10-15T01:54:27.430676Z	info	platform detected is Azure
+2023-10-15T01:54:27.438244Z	warn	HTTP request unsuccessful with status: 400 Bad Request
+2023-10-15T01:54:27.461760Z	info	Workload SDS socket not found. Starting Istio SDS Server
+2023-10-15T01:54:27.461760Z	info	Opening status port 15020
+2023-10-15T01:54:27.461800Z	info	CA Endpoint istiod-asm-1-17.aks-istio-system.svc:15012, provider Citadel
+2023-10-15T01:54:27.461840Z	info	Using CA istiod-asm-1-17.aks-istio-system.svc:15012 cert with certs: var/run/secrets/istio/root-cert.pem
+2023-10-15T01:54:27.472572Z	info	ads	All caches have been synced up in 54.523442ms, marking server ready
+2023-10-15T01:54:27.472909Z	info	xdsproxy	Initializing with upstream address "istiod-asm-1-17.aks-istio-system.svc:15012" and cluster "Kubernetes"
+2023-10-15T01:54:27.472959Z	info	sds	Starting SDS grpc server
+2023-10-15T01:54:27.474050Z	info	starting Http service at 127.0.0.1:15004
+2023-10-15T01:54:27.478068Z	info	Pilot SAN: [istiod-asm-1-17.aks-istio-system.svc]
+2023-10-15T01:54:27.479440Z	info	Starting proxy agent
+2023-10-15T01:54:27.479481Z	info	starting
+2023-10-15T01:54:27.479502Z	info	Envoy command: [-c etc/istio/proxy/envoy-rev.json --drain-time-s 45 --drain-strategy immediate --local-address-ip-version v4 --file-flush-interval-msec 1000 --disable-hot-restart --allow-unknown-static-fields --log-format %Y-%m-%dT%T.%fZ	%l	envoy %n %g:%#	%v	thread=%t -l warning --component-log-level misc:error --concurrency 2]
+2023-10-15T01:54:44.526177Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:54:47.462993Z	warn	ca	ca request failed, starting attempt 1 in 90.626309ms
+2023-10-15T01:54:47.554366Z	warn	ca	ca request failed, starting attempt 2 in 182.138259ms
+2023-10-15T01:54:47.737700Z	warn	ca	ca request failed, starting attempt 3 in 362.233595ms
+2023-10-15T01:54:48.100375Z	warn	ca	ca request failed, starting attempt 4 in 850.555311ms
+2023-10-15T01:54:48.951615Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:54:49.763688Z	warn	ca	ca request failed, starting attempt 1 in 107.340522ms
+2023-10-15T01:54:49.872131Z	warn	ca	ca request failed, starting attempt 2 in 213.997792ms
+2023-10-15T01:54:50.086740Z	warn	ca	ca request failed, starting attempt 3 in 419.581655ms
+2023-10-15T01:54:50.507503Z	warn	ca	ca request failed, starting attempt 4 in 793.319002ms
+2023-10-15T01:54:51.301561Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:54:52.477449Z	warn	ca	ca request failed, starting attempt 1 in 98.639668ms
+2023-10-15T01:54:52.576968Z	warn	ca	ca request failed, starting attempt 2 in 204.004732ms
+2023-10-15T01:54:52.781617Z	warn	ca	ca request failed, starting attempt 3 in 373.691644ms
+2023-10-15T01:54:53.156316Z	warn	ca	ca request failed, starting attempt 4 in 798.729499ms
+2023-10-15T01:54:53.955471Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:54:55.209587Z	warn	ca	ca request failed, starting attempt 1 in 99.798692ms
+2023-10-15T01:54:55.310062Z	warn	ca	ca request failed, starting attempt 2 in 182.178896ms
+2023-10-15T01:54:55.492846Z	warn	ca	ca request failed, starting attempt 3 in 423.922076ms
+2023-10-15T01:54:55.917655Z	warn	ca	ca request failed, starting attempt 4 in 869.105797ms
+2023-10-15T01:54:56.787805Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:54:58.085482Z	warn	ca	ca request failed, starting attempt 1 in 95.006691ms
+2023-10-15T01:54:58.181006Z	warn	ca	ca request failed, starting attempt 2 in 201.475282ms
+2023-10-15T01:54:58.382626Z	warn	ca	ca request failed, starting attempt 3 in 415.184776ms
+2023-10-15T01:54:58.798278Z	warn	ca	ca request failed, starting attempt 4 in 849.801519ms
+2023-10-15T01:54:59.523592Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:54:59.648609Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:01.462411Z	warn	ca	ca request failed, starting attempt 1 in 91.826555ms
+2023-10-15T01:55:01.554866Z	warn	ca	ca request failed, starting attempt 2 in 205.130144ms
+2023-10-15T01:55:01.760399Z	warn	ca	ca request failed, starting attempt 3 in 408.098137ms
+2023-10-15T01:55:02.169092Z	warn	ca	ca request failed, starting attempt 4 in 720.150824ms
+2023-10-15T01:55:02.890324Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:07.825139Z	warn	ca	ca request failed, starting attempt 1 in 105.683814ms
+2023-10-15T01:55:07.931612Z	warn	ca	ca request failed, starting attempt 2 in 215.058402ms
+2023-10-15T01:55:08.147139Z	warn	ca	ca request failed, starting attempt 3 in 380.85542ms
+2023-10-15T01:55:08.528464Z	warn	ca	ca request failed, starting attempt 4 in 803.861705ms
+2023-10-15T01:55:09.332642Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:14.523460Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:55:15.191563Z	warn	ca	ca request failed, starting attempt 1 in 95.166395ms
+2023-10-15T01:55:15.287080Z	warn	ca	ca request failed, starting attempt 2 in 200.09921ms
+2023-10-15T01:55:15.487531Z	warn	ca	ca request failed, starting attempt 3 in 423.500734ms
+2023-10-15T01:55:15.912313Z	warn	ca	ca request failed, starting attempt 4 in 741.208987ms
+2023-10-15T01:55:16.654302Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:26.629083Z	warn	ca	ca request failed, starting attempt 1 in 98.93835ms
+2023-10-15T01:55:26.728634Z	warn	ca	ca request failed, starting attempt 2 in 209.226043ms
+2023-10-15T01:55:26.938266Z	warn	ca	ca request failed, starting attempt 3 in 370.250616ms
+2023-10-15T01:55:27.308934Z	warn	ca	ca request failed, starting attempt 4 in 860.289235ms
+2023-10-15T01:55:28.169513Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:28.311425Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 40s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:55:29.522706Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:55:44.523635Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:55:44.843451Z	warn	ca	ca request failed, starting attempt 1 in 92.887731ms
+2023-10-15T01:55:44.936863Z	warn	ca	ca request failed, starting attempt 2 in 184.568188ms
+2023-10-15T01:55:45.122340Z	warn	ca	ca request failed, starting attempt 3 in 398.158926ms
+2023-10-15T01:55:45.521003Z	warn	ca	ca request failed, starting attempt 4 in 877.78112ms
+2023-10-15T01:55:46.399180Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:55:49.338598Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 61s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:55:58.835207Z	warn	ca	ca request failed, starting attempt 1 in 102.209401ms
+2023-10-15T01:55:58.937643Z	warn	ca	ca request failed, starting attempt 2 in 200.106206ms
+2023-10-15T01:55:59.138129Z	warn	ca	ca request failed, starting attempt 3 in 430.083004ms
+2023-10-15T01:55:59.522150Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:55:59.568698Z	warn	ca	ca request failed, starting attempt 4 in 722.657265ms
+2023-10-15T01:56:00.291931Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:56:11.547303Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 83s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:56:14.522106Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:56:29.522771Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:56:38.363601Z	warn	ca	ca request failed, starting attempt 1 in 104.768096ms
+2023-10-15T01:56:38.469048Z	warn	ca	ca request failed, starting attempt 2 in 196.952737ms
+2023-10-15T01:56:38.666516Z	warn	ca	ca request failed, starting attempt 3 in 404.521331ms
+2023-10-15T01:56:39.072220Z	warn	ca	ca request failed, starting attempt 4 in 783.046758ms
+2023-10-15T01:56:39.128046Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 111s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:56:39.855953Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:56:44.522613Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:56:59.522648Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:57:06.221386Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 138s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:57:14.118707Z	warn	ca	ca request failed, starting attempt 1 in 103.56802ms
+2023-10-15T01:57:14.223231Z	warn	ca	ca request failed, starting attempt 2 in 193.421418ms
+2023-10-15T01:57:14.417833Z	warn	ca	ca request failed, starting attempt 3 in 363.993959ms
+2023-10-15T01:57:14.522798Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:57:14.782728Z	warn	ca	ca request failed, starting attempt 4 in 861.351957ms
+2023-10-15T01:57:15.645132Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:57:29.522946Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:57:44.524036Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:57:54.931951Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 187s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:57:59.527851Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:58:07.186300Z	warn	ca	ca request failed, starting attempt 1 in 101.485367ms
+2023-10-15T01:58:07.288894Z	warn	ca	ca request failed, starting attempt 2 in 191.489685ms
+2023-10-15T01:58:07.480868Z	warn	ca	ca request failed, starting attempt 3 in 424.032395ms
+2023-10-15T01:58:07.905721Z	warn	ca	ca request failed, starting attempt 4 in 741.029698ms
+2023-10-15T01:58:08.647814Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:58:14.523827Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:58:29.524196Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:58:32.951329Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 225s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:58:44.525048Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:58:59.524319Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:59:08.763685Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 261s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:59:14.524003Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:59:29.523893Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:59:35.544857Z	warn	ca	ca request failed, starting attempt 1 in 102.258309ms
+2023-10-15T01:59:35.648274Z	warn	ca	ca request failed, starting attempt 2 in 206.791189ms
+2023-10-15T01:59:35.855815Z	warn	ca	ca request failed, starting attempt 3 in 368.560675ms
+2023-10-15T01:59:36.225426Z	warn	ca	ca request failed, starting attempt 4 in 867.078854ms
+2023-10-15T01:59:36.351141Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 288s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T01:59:37.093094Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T01:59:44.524744Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T01:59:59.524674Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:00:14.525228Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:00:23.037197Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 335s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:00:29.524639Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:00:44.524249Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:00:51.759933Z	warn	ca	ca request failed, starting attempt 1 in 92.402836ms
+2023-10-15T02:00:51.853502Z	warn	ca	ca request failed, starting attempt 2 in 211.387941ms
+2023-10-15T02:00:52.066041Z	warn	ca	ca request failed, starting attempt 3 in 425.439317ms
+2023-10-15T02:00:52.492581Z	warn	ca	ca request failed, starting attempt 4 in 859.249864ms
+2023-10-15T02:00:53.352827Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:00:57.208425Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 369s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:00:59.524644Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:01:14.525514Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:01:19.243881Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 391s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:01:29.524840Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:01:40.046284Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 412s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:01:44.525219Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:01:55.187263Z	warn	ca	ca request failed, starting attempt 1 in 91.944469ms
+2023-10-15T02:01:55.279662Z	warn	ca	ca request failed, starting attempt 2 in 185.171889ms
+2023-10-15T02:01:55.465631Z	warn	ca	ca request failed, starting attempt 3 in 436.136003ms
+2023-10-15T02:01:55.902320Z	warn	ca	ca request failed, starting attempt 4 in 740.391836ms
+2023-10-15T02:01:56.643413Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:01:59.524667Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:02:14.524117Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:02:29.345157Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 461s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:02:29.524297Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:02:44.525490Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:02:58.770173Z	warn	ca	ca request failed, starting attempt 1 in 95.365091ms
+2023-10-15T02:02:58.866608Z	warn	ca	ca request failed, starting attempt 2 in 219.091368ms
+2023-10-15T02:02:59.086097Z	warn	ca	ca request failed, starting attempt 3 in 407.694363ms
+2023-10-15T02:02:59.494873Z	warn	ca	ca request failed, starting attempt 4 in 785.796375ms
+2023-10-15T02:02:59.524713Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:03:00.281065Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:03:02.676948Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 495s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:03:14.524948Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:03:29.525086Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:03:39.424210Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 531s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:03:44.524616Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:03:59.524254Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:04:02.790552Z	warn	ca	ca request failed, starting attempt 1 in 98.246607ms
+2023-10-15T02:04:02.890001Z	warn	ca	ca request failed, starting attempt 2 in 189.361334ms
+2023-10-15T02:04:03.080501Z	warn	ca	ca request failed, starting attempt 3 in 428.443036ms
+2023-10-15T02:04:03.509238Z	warn	ca	ca request failed, starting attempt 4 in 739.215262ms
+2023-10-15T02:04:04.249224Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:04:14.524707Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:04:20.489276Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 572s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:04:29.525672Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:04:44.524652Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:04:48.541503Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 600s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:04:58.448018Z	warn	ca	ca request failed, starting attempt 1 in 103.50483ms
+2023-10-15T02:04:58.552469Z	warn	ca	ca request failed, starting attempt 2 in 193.27253ms
+2023-10-15T02:04:58.746943Z	warn	ca	ca request failed, starting attempt 3 in 399.916379ms
+2023-10-15T02:04:59.147678Z	warn	ca	ca request failed, starting attempt 4 in 776.816987ms
+2023-10-15T02:04:59.524176Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:04:59.925036Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:05:08.623203Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 621s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:05:14.525320Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:05:29.525194Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:05:44.525577Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:05:49.356642Z	warn	ca	ca request failed, starting attempt 1 in 100.70082ms
+2023-10-15T02:05:49.458188Z	warn	ca	ca request failed, starting attempt 2 in 184.005598ms
+2023-10-15T02:05:49.642662Z	warn	ca	ca request failed, starting attempt 3 in 403.932513ms
+2023-10-15T02:05:50.047336Z	warn	ca	ca request failed, starting attempt 4 in 773.276277ms
+2023-10-15T02:05:50.821439Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:05:55.908186Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 668s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:05:59.525877Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:06:14.525819Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:06:20.750942Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 693s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:06:29.525194Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:06:31.739182Z	warn	ca	ca request failed, starting attempt 1 in 92.20343ms
+2023-10-15T02:06:31.831512Z	warn	ca	ca request failed, starting attempt 2 in 182.111184ms
+2023-10-15T02:06:32.014048Z	warn	ca	ca request failed, starting attempt 3 in 381.136443ms
+2023-10-15T02:06:32.395652Z	warn	ca	ca request failed, starting attempt 4 in 753.147702ms
+2023-10-15T02:06:33.149870Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:06:44.529859Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:06:56.488302Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 728s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:06:59.524854Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:07:14.525375Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:07:19.764125Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 752s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:07:29.526456Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:07:44.525269Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:07:53.983137Z	warn	ca	ca request failed, starting attempt 1 in 91.238881ms
+2023-10-15T02:07:54.075536Z	warn	ca	ca request failed, starting attempt 2 in 206.271494ms
+2023-10-15T02:07:54.281968Z	warn	ca	ca request failed, starting attempt 3 in 374.600357ms
+2023-10-15T02:07:54.657713Z	warn	ca	ca request failed, starting attempt 4 in 729.896178ms
+2023-10-15T02:07:55.387821Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:07:59.530974Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:08:06.542849Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 798s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:08:14.525310Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:08:27.656275Z	warn	ca	ca request failed, starting attempt 1 in 101.733341ms
+2023-10-15T02:08:27.758856Z	warn	ca	ca request failed, starting attempt 2 in 211.614489ms
+2023-10-15T02:08:27.971422Z	warn	ca	ca request failed, starting attempt 3 in 360.200403ms
+2023-10-15T02:08:28.331969Z	warn	ca	ca request failed, starting attempt 4 in 746.805741ms
+2023-10-15T02:08:29.078987Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:08:29.525135Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:08:44.524696Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:08:55.375729Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 847s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:08:59.525410Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:09:09.488278Z	warn	ca	ca request failed, starting attempt 1 in 94.53992ms
+2023-10-15T02:09:09.583630Z	warn	ca	ca request failed, starting attempt 2 in 203.417217ms
+2023-10-15T02:09:09.788252Z	warn	ca	ca request failed, starting attempt 3 in 370.529936ms
+2023-10-15T02:09:10.159944Z	warn	ca	ca request failed, starting attempt 4 in 787.462897ms
+2023-10-15T02:09:10.947945Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:09:14.525333Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:09:24.547968Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 876s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:09:29.524524Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:09:44.524641Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:09:59.525113Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:10:07.361345Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 919s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:10:11.222978Z	warn	ca	ca request failed, starting attempt 1 in 103.34805ms
+2023-10-15T02:10:11.327459Z	warn	ca	ca request failed, starting attempt 2 in 199.034634ms
+2023-10-15T02:10:11.527012Z	warn	ca	ca request failed, starting attempt 3 in 395.685187ms
+2023-10-15T02:10:11.923728Z	warn	ca	ca request failed, starting attempt 4 in 794.087577ms
+2023-10-15T02:10:12.718768Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:10:14.524944Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:10:29.524465Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:10:32.256321Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 944s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:10:44.524293Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:10:54.827015Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 967s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:10:59.524567Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:11:12.868720Z	warn	ca	ca request failed, starting attempt 1 in 94.835891ms
+2023-10-15T02:11:12.964281Z	warn	ca	ca request failed, starting attempt 2 in 188.164353ms
+2023-10-15T02:11:13.152685Z	warn	ca	ca request failed, starting attempt 3 in 374.826967ms
+2023-10-15T02:11:13.528391Z	warn	ca	ca request failed, starting attempt 4 in 827.464588ms
+2023-10-15T02:11:14.356483Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:11:14.523326Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:11:24.090288Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 996s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:11:29.523415Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:11:44.523628Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:11:46.490637Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 1018s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:11:59.523456Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:12:14.522910Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:12:14.553353Z	warn	ca	ca request failed, starting attempt 1 in 105.286874ms
+2023-10-15T02:12:14.659794Z	warn	ca	ca request failed, starting attempt 2 in 203.06722ms
+2023-10-15T02:12:14.863199Z	warn	ca	ca request failed, starting attempt 3 in 379.752539ms
+2023-10-15T02:12:15.243903Z	warn	ca	ca request failed, starting attempt 4 in 759.723305ms
+2023-10-15T02:12:16.003852Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:12:18.574985Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 1050s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:12:29.523088Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:12:44.528241Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:12:52.517477Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 1084s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:12:59.522796Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:13:14.522740Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:13:14.708858Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 1107s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:13:16.465851Z	warn	ca	ca request failed, starting attempt 1 in 104.714047ms
+2023-10-15T02:13:16.571312Z	warn	ca	ca request failed, starting attempt 2 in 190.428371ms
+2023-10-15T02:13:16.762795Z	warn	ca	ca request failed, starting attempt 3 in 383.042037ms
+2023-10-15T02:13:17.146484Z	warn	ca	ca request failed, starting attempt 4 in 777.613714ms
+2023-10-15T02:13:17.924948Z	warn	sds	failed to warm certificate: failed to generate workload certificate: create certificate: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"
+2023-10-15T02:13:29.522547Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:13:44.522264Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused
+2023-10-15T02:13:47.652924Z	warning	envoy config external/envoy/source/common/config/grpc_stream.h:201	StreamAggregatedResources gRPC config stream to xds-grpc closed since 1140s ago: 14, connection error: desc = "transport: Error while dialing: dial tcp 10.0.60.214:15012: i/o timeout"	thread=27
+2023-10-15T02:13:59.524720Z	error	failed scraping envoy metrics: error scraping http://localhost:15090/stats/prometheus: Get "http://localhost:15090/stats/prometheus": dial tcp [::1]:15090: connect: connection refused

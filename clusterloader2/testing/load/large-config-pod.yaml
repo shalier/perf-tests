@@ -29,28 +29,18 @@ tuningSets:
   - name: Sequence
     parallelismLimitedLoad:
       parallelismLimit: 1
-  #TODO(https://github.com/kubernetes/perf-tests/issues/1024): This TuningSet is used only for pod-startup-latency, get rid of it
-  # Uniform5qps: for each running phase, use 5 qps.
-  # - name: Uniform5qps
-  #   qpsLoad:
-  #     qps: 5
-  # default is a tuningset that is meant to be used when we don't have any specific requirements on pace of operations.
-  # - name: default
-  #   globalQPSLoad:
-  #     qps: {{$defaultQPS}}
-  #     burst: 1
   - name: DeploymentQPS
     qpsLoad:
       qps: {{$deploymentQPS}}
 
 steps:
-  - name: Log - nodes={{.Nodes}},   totalPods={{$totalPods}},deploymentQPS={{$deploymentQPS}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
+  - name: Log - nodes={{.Nodes}}, totalPods={{$totalPods}}, deploymentQPS={{$deploymentQPS}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
     measurements:
     - Identifier: Dummy
       Method: Sleep
       Params:
         action: start
-        duration: 5m
+        duration: 1s
 
   - name: start measurements
     measurements:
@@ -75,7 +65,9 @@ steps:
         namespaces: 1
         replicasPerNamespace: {{$serviceSize}}
         objectTemplatePath: service.yaml
-
+        selectorLabel: test-service
+        sharedEndpoints: true
+  
   - name: Creating Deployments
     phases:
       - namespaceRange:
@@ -105,14 +97,15 @@ steps:
         objectBundle:
           - basename: test-deployment
             objectTemplatePath: simple-deployment.yaml
-  - name: Log - nodes={{.Nodes}},   totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
+  
+  - name: Log - nodes={{.Nodes}}, totalPods={{$totalPods}}, deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
     measurements:
     - Identifier: Dummy
       Method: Sleep
       tuningSet: DeploymentQPS
       Params:
         action: start
-        duration: 5m
+        duration: 3m
 
   - name: Deleting pods
     phases:
@@ -132,6 +125,7 @@ steps:
               Image: {{$latencyPodImage}}
               SvcName: test-service
               serviceSize: {{$serviceSize}}
+
   - name: Waiting for latency pods to be running
     measurements:
       - Identifier: WaitForRunningLatencyDeployments
@@ -142,13 +136,16 @@ steps:
         objectBundle:
           - basename: test-deployment
             objectTemplatePath: simple-deployment.yaml
-  - name: Sleep 10m After Create - nodes={{.Nodes}}, totalPods={{$totalPods}},deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
+
+  - name: Log - nodes={{.Nodes}}, totalPods={{$totalPods}}, deploymentQPS={{$loadTestThroughput}}, churn={{$churn}}, serviceSize={{$serviceSize}}, newDeploymentSize={{$newDeploymentSize}}
     measurements:
-      - Identifier: Wait
-        Method: Sleep
-        tuningSet: DeploymentQPS
-        Params:
-          duration: 10m
+    - Identifier: Dummy
+      Method: Sleep
+      tuningSet: DeploymentQPS
+      Params:
+        action: start
+        duration: 1s
+
   - name: Re-create pods
     phases:
       - namespaceRange:
@@ -167,6 +164,7 @@ steps:
               Image: {{$latencyPodImage}}
               SvcName: test-service
               serviceSize: {{$serviceSize}}
+
   - name: Waiting for latency pods to be running
     measurements:
       - Identifier: WaitForRunningLatencyDeployments
@@ -185,6 +183,7 @@ steps:
         tuningSet: DeploymentQPS
         Params:
           duration: 15m
+
   - name: Collecting saturation pod measurements
     measurements:
     - Identifier: SchedulingThroughput

@@ -6,8 +6,8 @@
 {{$MemoryRequest := DefaultParam .MemoryRequest "20M"}}
 {{$Image := DefaultParam .Image "registry.k8s.io/pause:3.9"}}
 {{$RUN_ON_ARM_NODES := DefaultParam .CL2_RUN_ON_ARM_NODES false}}
-{{$serviceSize := .serviceSize}}
-{{$index:= Mod .Index $serviceSize}}
+{{$SvcName := DefaultParam .SvcName "test-service"}}
+{{$sharedEndpoints := .sharedEndpoints}}
 
 apiVersion: apps/v1
 kind: Deployment
@@ -19,14 +19,20 @@ spec:
   replicas: {{.Replicas}}
   selector:
     matchLabels:
-      name: {{.Name}}
+{{if .sharedEndpoints }}
+      svc: {{.SvcName}}
+{{else}}
+      svc: {{.SvcName}}-{{.Index}}
+{{end}}
   template:
     metadata:
       labels:
         name: {{.Name}}
         group: {{.Group}}
-{{if .SvcName}}
-        svc: {{.SvcName}}-{{$index}}
+{{if .sharedEndpoints }}
+        svc: {{.SvcName}}
+{{else}}
+        svc: {{.SvcName}}-{{.Index}}
 {{end}}
     spec:
       hostNetwork: {{$HostNetworkMode}}

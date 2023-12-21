@@ -1,0 +1,9 @@
+,"sidecar_injection_requests_total{app=""istiod"",install_operator_istio_io_owning_resource=""unknown"",instance=""10.241.0.76:15014"",istio=""istiod"",istio_io_rev=""asm-1-17"",job=""kubernetes-pods"",kubernetes_azure_com_managedby=""aks"",namespace=""aks-istio-system"",operator_istio_io_component=""Pilot"",pod=""istiod-asm-1-17-76bf697d59-j5jrs"",pod_template_hash=""76bf697d59"",sidecar_istio_io_inject=""false""}"
+2023-12-21 07:25:56,3003.0
+2023-12-21 07:26:56,7066.0
+2023-12-21 07:27:56,10774.0
+2023-12-21 07:28:56,14290.0
+2023-12-21 07:29:56,15010.0
+2023-12-21 07:30:56,15010.0
+2023-12-21 07:31:56,15010.0
+2023-12-21 07:32:56,15010.0
