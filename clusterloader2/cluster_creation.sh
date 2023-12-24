@@ -111,8 +111,9 @@ KUBENET_VNET_SUBNET_ID="/subscriptions/${SUBSCRIPTION}/resourceGroups/${RESOURCE
 #     --enable-azure-service-mesh
 
 #skipping cni-cilium for now
-# done cni-azure 
-clusterNames=(dynamic-cilium dynamic-azure overlay-azure kubenet-azure overlay-cilium)
+# done cni-azure dynamic-azure overlay-azure
+# didn't run adjusted overlay-cilium**
+clusterNames=(dynamic-cilium kubenet-azure overlay-cilium)
 
 # for n in "${clusterNames[@]}"
 # do
@@ -127,26 +128,26 @@ for n in "${clusterNames[@]}"
 do
     kubectl config use-context $n
 
-    if [[ $n == *"cilium"* ]]; then
+    if [[ $n == *"dynamic"* ]]; then
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1 --vnet-subnet-id "${VNET_SUBNET_ID}" --pod-subnet-id "${POD_SUBNET_ID}"
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 500 --vnet-subnet-id "${VNET_SUBNET_ID}" --pod-subnet-id "${POD_SUBNET_ID}" --max-pods 110
 
-        ./sidecar_test.sh -pa "15000 20000 25000" -l $n
-        ./service_test.sh -ea "10 15 17 20" -l $n
+        ./sidecar_test.sh -pa "25000 30000" -l $n
+        ./service_test.sh -ea "15 17 20" -l $n
 
     elif [[ $n == *"kubenet"* ]]; then
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1 --vnet-subnet-id "${KUBENET_VNET_SUBNET_ID}"
         # kubenet can only have 400 nodes, systempool - 5, prom -1, userpool - 394
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 394 --vnet-subnet-id "${KUBENET_VNET_SUBNET_ID}" --max-pods 110
-        ./sidecar_test.sh -pa "25000 30000" -l $n
-        ./service_test.sh -ea "15 17 20" -l $n
+        ./sidecar_test.sh -pa "35000 40000" -l $n #25000 30000
+        # ./service_test.sh -ea "15 17 20" -l $n #max at 17
 
     else
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 500 --max-pods 110
         if [[ $n == *"overlay"* ]]; then
-            ./sidecar_test.sh -pa "30000 35000 40000" -l $n
-            ./service_test.sh -ea "10 15 17 20" -l $n
+            ./sidecar_test.sh -pa "15000 20000 25000" -l $n #30000 35000 40000
+            ./service_test.sh -ea "10 15" -l $n # 17 20
         elif [[ $n == "cni-azure" ]]; then
             ./sidecar_test.sh -pa "20000" -l $n
         else
@@ -158,8 +159,11 @@ do
     do
         kubectl cordon $node
     done
+    testNamespaces=$(kubectl get ns -l istio.io/rev=asm-1-17 --no-headers -o jsonpath='{.items[*].metadata.name}')
+    kubectl delete namespace $testNamespaces
     kubectl -n aks-istio-system delete pod --all
+    kubectl delete -f testing/load/prometheus.yaml
+
     az aks nodepool delete --cluster-name $n -g ${RESOURCE_GROUP} -n prom
     az aks nodepool delete --cluster-name $n -g ${RESOURCE_GROUP} -n userpool
-    sleep 15m
 done
