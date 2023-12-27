@@ -65,11 +65,11 @@ if ! $skip; then
         pkill -f "port-forward"
         echo "----------------------------------------------------------------------------------------------------"
         kubectl apply -f testing/load/prometheus.yaml
-        sleep 1m
+        sleep 30s
         echo "----------------------------------------------------------------------------------------------------"
         startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-        go run cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=500 --provider=aks --kubeconfig=${HOME}/.kube/config -v 2 --report-dir=logs
+        go run cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=500 --provider=aks --kubeconfig=${HOME}/.kube/config -v 0 --report-dir=logs
 
         kubectl port-forward svc/prometheus 9090:9090 &
 
