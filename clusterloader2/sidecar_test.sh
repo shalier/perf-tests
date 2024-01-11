@@ -16,6 +16,7 @@ while [ $# -gt 0 ] ; do
     -i | --istiodFail) istiodFailed=true ;;
     -c | --churn) CL2_CHURNS=$2 ;;
     -pa | --podArray) podArray=$2 ;;
+    -ca | --churnArray) churnArray=$2 ;;
     -v) verbosity=$2 ;;
     -l) label=$2;;
     -h | --help) $'-k | --skip : to skip clusterloader \n   -s | --start for startTime \n -e | --end for endTime \n -p | --podCount set CL2_TOTAL_PODS \n  
@@ -27,10 +28,18 @@ done
 
 if [ -z "$podArray" ]
 then
-    pods=(5000)
+  pods=(5000)
 else
   pods=($podArray)
 fi
+
+if [ -z "$churnArray" ]
+then
+  churn=(0 25 50) # churn * 2 since up and down
+else
+  churn=($churnArray)
+fi
+
 if [ -z "$label" ] 
 then
   testLabel="label"
@@ -39,7 +48,6 @@ else
 fi
 
 if ! $skip; then
-  churn=(0 25 50) # churn * 2 since up and down
     for p in "${pods[@]}"
     do
       for c in "${churn[@]}"
@@ -69,7 +77,7 @@ if ! $skip; then
         echo "----------------------------------------------------------------------------------------------------"
         startTime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-        go run cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=500 --provider=aks --kubeconfig=${HOME}/.kube/config -v 0 --report-dir=logs
+        go run cmd/clusterloader.go --testconfig=testing/load/large-config-pod.yaml --nodes=500 --provider=aks --kubeconfig=${HOME}/.kube/config -v 2 --report-dir=logs
 
         kubectl port-forward svc/prometheus 9090:9090 &
 

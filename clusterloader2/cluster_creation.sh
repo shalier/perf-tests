@@ -77,7 +77,7 @@ KUBENET_VNET_SUBNET_ID="/subscriptions/${SUBSCRIPTION}/resourceGroups/${RESOURCE
 
 # echo "creating overlay-cilium"
 # #Azure CNI Overlay + Cilium
-# az aks create --name overlay-cilium \
+# az aks create --name t2overlay-cilium \
 #     --resource-group ${RESOURCE_GROUP} \
 #     --location ${LOCATION} \
 #     --network-plugin azure \
@@ -115,10 +115,11 @@ KUBENET_VNET_SUBNET_ID="/subscriptions/${SUBSCRIPTION}/resourceGroups/${RESOURCE
 #     --enable-azure-service-mesh
 
 #skipping cni-cilium for now
-# done cni-azure dynamic-azure overlay-azure dynamic-cilium kubenet-azure
+# done dynamic-azure overlay-azure dynamic-cilium kubenet-azure
 # increased metrics server mem limit - 600mi; increase node pool 850 for overlay-cilium
 # overlay-cilium is being weird skipping for now
-clusterNames=(overlay-azure kubenet-azure dynamic-cilium dynamic-azure)
+#done overlay-azure cni-azure kubenet-azure dynamic-azure kubenet-azure dynamic-cilium
+clusterNames=(overlay-cilium2)
 
 # for n in "${clusterNames[@]}"
 # do
@@ -137,31 +138,31 @@ do
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1 --vnet-subnet-id "${VNET_SUBNET_ID}" --pod-subnet-id "${POD_SUBNET_ID}"
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 500 --vnet-subnet-id "${VNET_SUBNET_ID}" --pod-subnet-id "${POD_SUBNET_ID}" --max-pods 250
         if [[ $n == *"azure"* ]]; then #dynamic-azure
-            ./sidecar_test.sh -pa "30000 40000" -l $n # 25000
-            ./service_test.sh -ea "15 17" -l $n #15
+            ./sidecar_test.sh -pa "30000" -ca "50" -l $n # 25000
+            # ./service_test.sh -ea "15 17" -l $n #15
         else #dynamic-cilium
-            ./sidecar_test.sh -pa "20000" -l $n #15000 f 25000
-            ./service_test.sh -ea "15 17" -l $n #15
+            ./sidecar_test.sh -pa "20000" -ca "25 50" -l $n #15000 f 25000
+            # ./service_test.sh -ea "15 17" -l $n #15
         fi
     elif [[ $n == *"kubenet"* ]]; then #kubenet-azure
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1 --vnet-subnet-id "${KUBENET_VNET_SUBNET_ID}"
         # kubenet can only have 400 nodes, systempool - 5, prom -1, userpool - 394
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 394 --vnet-subnet-id "${KUBENET_VNET_SUBNET_ID}" --max-pods 250
-        # ./sidecar_test.sh -pa "25000 30000 35000" -l $n #25000 30000 35000
-        ./service_test.sh -ea "15 17" -l $n #15
+        ./sidecar_test.sh -pa "25000" -ca "50" -l $n #25000 30000 35000
+        # ./service_test.sh -ea "15 17" -l $n #15
 
     else
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n prom --mode User --node-vm-size Standard_E32-16s_v3 --node-count 1
         az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool --mode User --node-vm-size Standard_D16_V3 --node-count 500 --max-pods 250
         if [[ $n == *"cilium"* ]]; then #overlay-cilium
-            az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool2 --mode User --node-vm-size Standard_D16_V3 --node-count 450 --max-pods 250
-            ./sidecar_test.sh -pa "10000 15000" -l $n #5000
-            ./service_test.sh -ea "10" -l $n #
+            # az aks nodepool add --cluster-name $n -g ${RESOURCE_GROUP} -n userpool2 --mode User --node-vm-size Standard_D16_V3 --node-count 450 --max-pods 250
+            ./sidecar_test.sh -pa "20000" -l $n #15000
+            ./service_test.sh -ea "10 15 17" -l $n #
         elif [[ $n == *"cni"* ]]; then #cni-azure
             ./sidecar_test.sh -pa "15000" -l $n #15000
             ./service_test.sh -ea "15 17" -l $n #15
         else #overlay-azure
-            ./sidecar_test.sh -pa "25000" -l $n #35000 30000
+            ./sidecar_test.sh -pa "20000" -ca "50" -l $n #35000 30000
             ./service_test.sh -ea "15 17" -l $n #15
         fi
     fi

@@ -41,7 +41,6 @@ fi
 
 if ! $skip; then
   svcCount=(1000)
-  endpoints=(15 17 20)
     for service in "${svcCount[@]}"
     do
       for endpoint in "${endpoints[@]}"
